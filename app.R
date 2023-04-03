@@ -27,8 +27,11 @@ ui <- fluidPage(
                                         label = "Select Analyses to run:",
                                         choices = c("option 1", "option 2", "option 3"),
                         ),
-                    actionButton("run", "run code")
+                    actionButton("runcode", "run code")
                 )
+            ),
+            fluidRow(
+                plotOutput("test_plot", click = "plot_click")
             )
         ),
         tabPanel("About",
@@ -61,45 +64,52 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
-    # currently crashes when no file is selected
-    # fix pls
-    observeEvent(input$run,
+    observeEvent(input$runcode,
         {
-            exp <- read.csv(input$file1$datapath,
-                header = TRUE,
-                sep = input$sep,
-                quote = input$quote
-            )
-            output$table <- renderTable(
-                head(exp)
-            )
-            # load('~/Code/iLipidome/Documentation/required_data.RData')
-            
-            # # do prelim data processing
-            # req(input$file1)
-
-            
-
-            # # built <- build_char_table(raw_data = exp, network_node = network_node)
-            
-            # # exp_sel <- built[[1]]
-            # # char_sel <- built[[2]]
-
-            # # no_sub_t <- unprocessed_data_test(
-            # #     exp_data = exp_sel,
-            # #     char_table = char_sel,
-            # #     method = 't.test',
-            # #     significant='adj_p_value',
-            # #     ctrl_group = 1:7, 
-            # #     exp_group = 8:13
-            # # )
-
-            # output$table = renderTable(
-            #     head(exp)
-            #     # exp
-            # )
+            output$test_plot <- renderPlot({
+                plot(c(1, 2, 3), c(2, 3, 4))
+            })
         }
     )
+    # currently crashes when no file is selected
+    # fix pls
+    # observeEvent(input$runcode,
+    #     {
+    #         exp <- read.csv(input$file1$datapath,
+    #             header = TRUE,
+    #             sep = input$sep,
+    #             quote = input$quote
+    #         )
+    #         output$table <- renderTable(
+    #             head(exp)
+    #         )
+    #         load('~/Code/iLipidome/Documentation/required_data.RData')
+            
+    #         # do prelim data processing
+    #         # req(input$file1)
+
+            
+
+    #         # built <- build_char_table(raw_data = exp, network_node = network_node)
+            
+    #         # exp_sel <- built[[1]]
+    #         # char_sel <- built[[2]]
+
+    #         # no_sub_t <- unprocessed_data_test(
+    #         #     exp_data = exp_sel,
+    #         #     char_table = char_sel,
+    #         #     method = 't.test',
+    #         #     significant='adj_p_value',
+    #         #     ctrl_group = 1:7, 
+    #         #     exp_group = 8:13
+    #         # )
+
+    #         output$table = renderTable(
+    #             head(exp)
+    #             # exp
+    #         )
+    #     }
+    # )
 
     output$downloadData <- downloadHandler(
         #change file names
