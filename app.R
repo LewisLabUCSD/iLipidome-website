@@ -10,17 +10,20 @@ library(MKmisc)
 library(gplots)
 library(gtools)
 
+library(iLipidome)
+#library(test1)
+
 ui <- fluidPage(
     # app title
     navbarPage(
         "iLipidome",
-        tabPanel("Try it out!", 
+        tabPanel("Try it out!",
             fluidRow(
                 column(12,
                     fileInput(
                             "file1",
-                            "Choose files", 
-                            multiple = FALSE, 
+                            "Choose files",
+                            multiple = FALSE,
                             accept = c("text/csv", "text/comma-separated-values", ".csv")
                         ),
                     checkboxGroupInput(inputId = "things to run",
@@ -32,16 +35,17 @@ ui <- fluidPage(
             ),
             fluidRow(
                 #plotOutput("test_plot", click = "plot_click")
-                tableOutput("t1")
+                #tableOutput("t1")
+                visNetworkOutput("visNet")
             )
         ),
         tabPanel("About",
             value = 4,
             fluidRow(
-                column(6, 
+                column(6,
                     p("about the project")
                 ),
-                column(6, 
+                column(6,
                     p("authors")
                 )
             ),
@@ -60,52 +64,10 @@ ui <- fluidPage(
         )
     ),
 
-    
+
 )
 
 server <- function(input, output) {
-
-
-    build_char_table <- function(raw_data, network_node){
-  browser()
-  class <- raw_data$feature %>% str_extract('[A-Za-z]+( O-)*')
-  class_included <- class %in% network_node$Abbreviation
-  
-  
-  totallength <- raw_data$feature %>% str_extract_all('\\d+:') %>% 
-    map_int(~str_sub(.x, end = -2) %>% as.integer() %>% sum)
-  
-  totaldb <- raw_data$feature %>% str_extract_all('\\d+;') %>% 
-    map_int(~str_sub(.x, end = -2) %>% as.integer() %>% sum)
-  
-  totaloh <- raw_data$feature %>% str_extract_all(';\\d+') %>% 
-    map_int(~str_sub(.x, start = 2) %>% as.integer() %>% sum)
-  
-  FA_sum <- str_c(totallength, ':', totaldb, ';', totaloh)
-  
-  FA_split <- raw_data$feature %>% str_extract_all('\\d+:\\d+;\\d+') %>% 
-    map_chr(~str_c(.x, collapse = '_'))
-
-    FA_num <- vector("numeric", length(FA_sum))
-    #browser()
-  #FA_num <- FA_sum
-
-  char_table <- data.frame(feature=raw_data$feature, class=class, totallength=totallength,
-                           totaldb=totaldb, totaloh=totaloh, FA_sum=FA_sum, FA_split=FA_split, FA_num=FA_num) %>% 
-    .[class_included,] %>% left_join(network_node[c('Abbreviation','FA')], by=c('class'='Abbreviation'))
-  
-  #colnames(char_table)[8] <- 'FA_num'
-  FA_exact <- map_int(str_split(char_table$FA_split, '_'), ~length(.x))==char_table$FA_num
-  char_table$FA_split[!FA_exact] <- ''
-  
-  each_FA <- str_extract_all(char_table$FA_split, '\\d+:\\d+;\\d+') %>% map(.f = function(x){x[x!='0:0;0']})
-  
-  char_table <- char_table %>% mutate(each_FA=each_FA)
-  
-  raw_data <- raw_data[class_included,]
-  
-  return(list(raw_data, char_table))
-}
 
     # observeEvent(input$runcode,
     #     {
@@ -118,39 +80,86 @@ server <- function(input, output) {
     # fix pls
     observeEvent(input$runcode,
         {
-            exp <- read.csv(input$file1$datapath,
-                header = TRUE,
-                sep = ",",
-                quote = input$quote
-            )
-            output$table <- renderTable(
+            #browser()
+
+            if (!is.null(input$file1$datapath)) {
+              exp <- read.csv(input$file1$datapath,
+                              header = TRUE,
+                              sep = ",",
+                              quote = "\""
+              )
+              output$table <- renderTable(
                 head(exp)
-            )
-            load('~/Code/iLipidome/Documentation/required_data.RData')
-            
-            # do prelim data processing
-            # req(input$file1)
+              )
+              load('~/iLipidome/data/required_data.RData')
 
-            
+              # do prelim data processing
+              # req(input$file1)
 
-            built <- build_char_table(raw_data = exp, network_node = network_node)
-            
-            exp_sel <- built[[1]]
-            char_sel <- built[[2]]
 
-            # no_sub_t <- unprocessed_data_test(
-            #     exp_data = exp_sel,
-            #     char_table = char_sel,
-            #     method = 't.test',
-            #     significant='adj_p_value',
-            #     ctrl_group = 1:7, 
-            #     exp_group = 8:13
-            # )
 
-            output$t1 = renderTable(
-                char_sel
-                # exp
-            )
+              built <- build_char_table(raw_data = exp, network_node = network_node)
+
+              exp_sel <- built[[1]]
+              char_sel <- built[[2]]
+
+              no_sub_t <- unprocessed_data_test(
+                exp_data = exp_sel,
+                char_table = char_sel,
+                method = 't.test',
+                significant='adj_p_value',
+                ctrl_group = 1:7,
+                exp_group = 8:13
+              )
+
+              # no_sub_t[[1]] %>% head()
+
+              # no_sub_t[[2]] %>% head()
+
+              #browser()
+
+              FA_network_new <- build_FA_net(FA_network = FA_network,
+                                             unprocessed_data_result = no_sub_t)
+
+              FA_substructure <- FA_sub_transform(FA_network = FA_network_new,
+                                                  unprocessed_data_result = no_sub_t,
+                                                  unmapped_FA = c('w9-18:2;0','w3-20:4;0'))
+
+              FA_sub_stop <- FA_sub_extract(char_table = char_sel,
+                                            FA_substructure = FA_substructure,
+                                            unprocessed_data_result = no_sub_t,
+                                            exact_FA='no', exo_lipid='w3-22:6;0')
+
+              FA_sub_exp <- lipid_sub_matrix(exp_data = exp_sel, sub_data = FA_sub_stop,
+                                             sub_type = 'FA')
+
+              FA_sub_exp_t <- t_test(data = FA_sub_exp[[3]], ctrl = 1:7, exp = 8:13,
+                                     method = 't.test', significant = 'adj_p_value')
+
+              set.seed(1)
+              path_score_FA <- path_scoring(network = FA_network_new, sub_t = FA_sub_exp_t,
+                                            calibrate = T, data_type = 'FA')
+
+              reaction_score_FA <- reaction_scoring(network = FA_network_new,
+                                                    sub_exp = FA_sub_exp[[3]],
+                                                    sub_t = FA_sub_exp_t,
+                                                    ctrl = 1:7, exp = 8:13,
+                                                    Species = 'rat')
+
+              FA_network_data <- draw_network(network_data = FA_network_new,
+                                              DE_data = FA_sub_exp_t,
+                                              if_species = F, significant = 'adj_p_value',
+                                              path_scoring_result = path_score_FA,
+                                              reaction_scoring_result = reaction_score_FA,
+                                              top_n = 5, path_type = 'both')
+
+              output$visNet <- renderVisNetwork({
+                visNetwork(FA_network_data[[1]],FA_network_data[[2]]) %>%
+                  visIgraphLayout(layout = "layout_with_sugiyama", type='square',
+                                  physics = F, smooth = TRUE, randomSeed =5)
+              })
+            }
+
         }
     )
 
