@@ -763,6 +763,8 @@ processCVD <- function(file1, file2) {
     print(SF4g)
     print(SF4f)
     dev.off()
+
+    return (c(F6b, SF4c, SF4e, SF5c, SF4b, SF4d, SF4a, F6c, F6d1, F6d2, F6d3, F6d4, SF4g, SF4f))
 }
 
 processDHA <- function(file1, file2) {
@@ -781,13 +783,13 @@ processDHA <- function(file1, file2) {
     char <- file2
 
     data_process <- function(exp_data, exclude_var_missing=T, 
-                            missing_pct_limit=50,
-                            replace_zero=T, zero2what='min', xmin=0.5,
-                            replace_NA=T, NA2what='min', ymin=0.5,
-                            pct_transform=T,
-                            data_transform=T,trans_type='log',
-                            centering=F,
-                            scaling=F){
+                        missing_pct_limit=50,
+                        replace_zero=T, zero2what='min', xmin=0.5,
+                        replace_NA=T, NA2what='min', ymin=0.5,
+                        pct_transform=T,
+                        data_transform=T,trans_type='log',
+                        centering=F,
+                        scaling=F){
     require(tidyverse)
     require(stringr)
     exp_data2 <- exp_data[-1]
@@ -1894,7 +1896,11 @@ processDHA <- function(file1, file2) {
     mutate(to=str_replace_all(to, ';0','')) %>% 
     .[c(1:9,16,21,22,29,34,35)]
 
-    
+    F4f_data$font.size[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2k_data$edge_name] <- 40
+    F4f_data$label[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2k_data[SF2k_data$perturbation_score>0,]$edge_name] <- 'Increase'
+    F4f_data$label[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2k_data[SF2k_data$perturbation_score<0,]$edge_name] <- 'Decrease'
+    F4f_data$font.color[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2k_data[SF2k_data$perturbation_score>0,]$edge_name] <- 'red'
+    F4f_data$font.color[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2k_data[SF2k_data$perturbation_score<0,]$edge_name] <- 'blue'
 
     #write.xlsx(F4f_data, file.path(file, 'source_data/F4f.xlsx'), sheetName = "Sheet1", col.names = T, row.names = F, append = F,showNA = F)
 
@@ -2002,12 +2008,6 @@ processDHA <- function(file1, file2) {
                                 paste0("<i style='color:#0000FF'>", node2, "</i>"))) %>% 
     mutate(edge_color=paste0(node1_color,node2_color, FA_change))
 
-    F4f_data$font.size[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2j_data$edge_name] <- 40
-    F4f_data$label[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2j_data[SF2j_data$perturbation_score>0,]$edge_name] <- 'Increase'
-    F4f_data$label[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2j_data[SF2j_data$perturbation_score<0,]$edge_name] <- 'Decrease'
-    F4f_data$font.color[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2j_data[SF2j_data$perturbation_score>0,]$edge_name] <- 'red'
-    F4f_data$font.color[str_c(F4f_data$from, ' --> ',F4f_data$to) %in% SF2j_data[SF2j_data$perturbation_score<0,]$edge_name] <- 'blue'
-
     #write.csv(SF2j_data[-c(20:22)], file.path(file, 'source_data/SF2j.csv'), row.names = F)
 
     SF2j <- SF2j_data %>% 
@@ -2053,11 +2053,11 @@ processDHA <- function(file1, file2) {
     mutate(to=str_replace_all(to, ';0','')) %>% 
     .[c(1:9,17,22,23,31,36,37)]
 
-    F4e_data$font.size[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2i_data$edge_name] <- 40
-    F4e_data$label[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2i_data[SF2i_data$perturbation_score>0,]$edge_name] <- 'Increase'
-    F4e_data$label[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2i_data[SF2i_data$perturbation_score<0,]$edge_name] <- 'Decrease'
-    F4e_data$font.color[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2i_data[SF2i_data$perturbation_score>0,]$edge_name] <- 'red'
-    F4e_data$font.color[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2i_data[SF2i_data$perturbation_score<0,]$edge_name] <- 'blue'
+    F4e_data$font.size[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2j_data$edge_name] <- 40
+    F4e_data$label[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2j_data[SF2j_data$perturbation_score>0,]$edge_name] <- 'Increase'
+    F4e_data$label[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2j_data[SF2j_data$perturbation_score<0,]$edge_name] <- 'Decrease'
+    F4e_data$font.color[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2j_data[SF2j_data$perturbation_score>0,]$edge_name] <- 'red'
+    F4e_data$font.color[str_c(F4e_data$from, ' --> ',F4e_data$to) %in% SF2j_data[SF2j_data$perturbation_score<0,]$edge_name] <- 'blue'
 
     #write.xlsx(F4e_data, file.path(file, 'source_data/F4e.xlsx'), sheetName = "Sheet1", col.names = T, row.names = F, append = F,showNA = F)
 
@@ -4058,19 +4058,22 @@ processLPCAT <- function(file1, file2, file3) {
     #-------------------Save data-------------------
     #save.image(file.path(file, 'LPCAT1.RData'))
 
-    pdf("~/Code/iLipidome-website/LPCATtest.pdf")
+    # pdf("~/Code/iLipidome-website/LPCATtest.pdf")
 
-    print(SF3a)
-    print(F5c)
-    print(F5d)
-    # print(F5b) visnetworks
-    # print(SF5b)
-    print(SF3b)
-    print(F5e)
-    print(SF3c)
-    print(SF3d)
+    # print(SF3a)
+    # print(F5c)
+    # print(F5d)
+    # # print(F5b) visnetworks
+    # # print(SF5b)
+    # print(SF3b)
+    # print(F5e)
+    # print(SF3c)
+    # print(SF3d)
 
-    dev.off()
+    # dev.off()
+
+    #return (F5b)
+    return (list(SF3a, F5c, F5d, F5b, SF5b, SF3b, F5e, SF3c, SF3d))
 
     # render visnetwork to pdf
 
