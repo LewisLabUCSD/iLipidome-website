@@ -16,6 +16,13 @@ library(gridExtra)
 library(ggrepel)
 library(ggtext)
 
+library(ComplexHeatmap)
+library(fpc)
+library(cowplot)
+
+library(ggplot2)
+library(ggvenn)
+
 # install.packages('~/iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
 
 library(iLipidome)
@@ -23,60 +30,6 @@ library(iLipidome)
 source("functions.R")
 
 load('data/required_data.RData')
-
-file_inputs <- tabsetPanel(
-    id = "fileInputs",
-    type = "hidden",
-    tabPanel("default",
-        # default file input
-        fileInput(
-                "file1",
-                "Choose file",
-                multiple = FALSE,
-                accept = c("text/csv", "text/comma-separated-values", ".csv")
-        )
-    ),
-    tabPanel("CVD", 
-    ),
-    tabPanel("DHA", 
-    ),
-    tabPanel("KO", 
-    ),
-    tabPanel("LPCAT", 
-    ),
-    tabPanel("test",
-    ),
-)
-
-plots <- tabsetPanel(
-    id = "plots",
-    type = "hidden",
-    tabPanel("default",
-        visNetworkOutput("visNet1"),
-        visNetworkOutput("visNet2"),
-        visNetworkOutput("visNet3"),
-    ),
-    tabPanel("CVD", 
-    ),
-    tabPanel("DHA", 
-    ),
-    tabPanel("KO", 
-    ),
-    tabPanel("LPCAT", 
-        #c(SF3a, F5c, F5d, F5b, SF5b, SF3b, F5e, SF3c, SF3d)
-        plotOutput("SF3a"),
-        plotOutput("F5c"),
-        plotOutput("F5d"),
-        visNetworkOutput("F5b"),
-        visNetworkOutput("SF5b"),
-        plotOutput("SF3b"),
-        plotOutput("F5e"),
-        plotOutput("SF3c"),
-        plotOutput("SF3d"),
-    ),
-    tabPanel("test",
-    ),
-)
 
 ui <- fluidPage(
     # app title
@@ -105,35 +58,146 @@ ui <- fluidPage(
                     )
                 )
         ),
-        tabPanel("default",
-            fluidRow(
-                column(4,
-                    radioButtons("datasetselector", "Select dataset:",
-                        c(
-                            "default" = "default",
-                            "DHA" = "DHA",
-                            "CVD" = "CVD",
-                            "Lipid KO" = "KO",
-                            "LPCAT" = "LPCAT",
-                            "test" = "test"
+        tabPanel("Lipid Substructure Analysis",
+            tabsetPanel(
+                tabPanel("Fatty Acid Analysis",
+                    fluidRow(
+                        column(4, 
+                            radioButtons("FAData", "Data Source",
+                                c(
+                                    "Example dataset (<dataset name>)" = "FAExample",
+                                    "Upload your own data" = "FACustom"
+                                )
+                            ),
+                            tabsetPanel(id = "FAFileIn", type = "hidden",
+                                tabPanel("FAExample"
+                                ),
+                                tabPanel("FACustom",
+                                    fileInput("FAfile", "Choose file",
+                                        multiple = FALSE,
+                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                    )
+                                ),
+                            )
+                        ),
+                        column(8, style = "background-color:#defae0; padding: 8px",
+                            h2("Parameter Selection"),
+                            radioButtons("FAMethod", "method:",
+                                c(
+                                    "t.test" = "t",
+                                    "wilcox.test" = "wilcox",
+                                    "mod.t.test" = "mod.t"
+                                )
+                            ),
+                            selectInput("FActrl", "ctrl:", 
+                                c()
+                            ),
+                            selectInput("FAexp", "exp:", 
+                                c()
+                            ),
+                            selectInput("FAunmappedFA", "unmapped FA:", 
+                                c()
+                            ),
+                            selectInput("FAexolipid", "exo lipid:", 
+                                c()
+                            ),
+                            radioButtons("FAspecies", "species:", 
+                                c(
+                                    "human" = "human",
+                                    "mouse" = "mouse",
+                                    "rat" = "rat"
+                                )
+                            ),
                         )
                     ),
-                    file_inputs,
-                    radioButtons("deffuncselector", "Select functions:",
-                        c("func1" = "f1",
-                        "func2" = "f2",
-                        "func3" = "f3",
-                        "func4" = "f4")
+                    fluidRow(
+                        actionButton("FARun", "run code")
                     ),
-                    checkboxInput("downloadPDF", "Download Plots as PDF", FALSE),
-                    actionButton("runcode", "run code"),
-                    textOutput("loading")
+                    fluidRow( # for visualizations
+                        tableOutput("FAPathScore"),
+                        plotOutput("FAPathScorePlot"),
+                        tableOutput("FAReactionScore"),
+                        plotOutput("FAReactionScorePlot"),
+                        visNetworkOutput("FANetwork")
+                    )
                 ),
-                column(8,
-                    plots
+                tabPanel("Lipid Species Analysis",
+                    fluidRow(
+                        column(4, 
+                            radioButtons("LSData", "Data Source",
+                                c(
+                                    "Example dataset (<dataset name>)" = "LSExample",
+                                    "Upload your own data" = "LSCustom"
+                                )
+                            ),
+                            tabsetPanel(
+                                id = "LSFileIn", type = "hidden",
+                                tabPanel("LSExample"
+                                ),
+                                tabPanel("LSCustom",
+                                    fileInput("LSfile", "Choose file",
+                                        multiple = FALSE,
+                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                    )
+                                ),
+                            )
+                        ),
+                        column(8, style = "background-color:#defae0;",
+                            selectInput("LSParams", "Parameter Selection:", 
+                                c(
+                                    # put params for lipid species here
+                                )
+                            ),
+                        )
+                    ),
+                    fluidRow(
+                        actionButton("LSRun", "run code")
+                    ),
+                    fluidRow( # for visualizations
+
+                    )
                 ),
+                tabPanel("Lipid Class Analysis",
+                    fluidRow(
+                        column(4, 
+                            radioButtons("LCData", "Data Source",
+                                c(
+                                    "Example dataset (<dataset name>)" = "LCExample",
+                                    "Upload your own data" = "LCCustom"
+                                )
+                            ),
+                            tabsetPanel(
+                                id = "LCFileIn",
+                                type = "hidden",
+                                tabPanel("LCExample"
+                                ),
+                                tabPanel("LCCustom",
+                                    fileInput(
+                                        "LCfile",
+                                        "Choose file",
+                                        multiple = FALSE,
+                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                    )
+                                ),
+                            )
+                        ),
+                        column(8, style = "background-color:#defae0;",
+                            selectInput("LCParams", "Parameter Selection:", 
+                                c(
+                                    # put params for lipid class here
+                                )
+                            ),
+                        )
+                    ),
+                    fluidRow(
+                        actionButton("LCRun", "run code")
+                    ),
+                    fluidRow( # for visualizations
+
+                    )
+                )
             )
-        ),
+        )
     ),
     disconnectMessage()
 )
@@ -143,164 +207,54 @@ server <- function(input, output, session) {
         session$close()
     })
 
-    observeEvent(input$datasetselector, {
-        updateTabsetPanel(inputId = "fileInputs", selected = input$datasetselector)
-        updateTabsetPanel(inputId = "plots", selected = input$datasetselector)
-    }) 
+    observeEvent(input$FAData, {
+        updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
+    })
+    observeEvent(input$LSData, {
+        updateTabsetPanel(inputId = "LSFileIn", selected = input$LSData)
+    })
+    observeEvent(input$LCData, {
+        updateTabsetPanel(inputId = "LCFileIn", selected = input$LCData)
+    })
 
-    observeEvent(input$runcode,
-        {
-            if (input$datasetselector == "default") {
-                if (is.null(input$file1$datapath)) {
-                    output$loading <- renderText("please select a file") 
-                    # in the future, could change this to an r shiny error, instead of this jank custom one
-                }
-                if (!is.null(input$file1$datapath)) {
-                    withProgress(message = "doing computation", value = 0, {
-                        exp <- read.csv(input$file1$datapath,
+    observeEvent(input$FARun, {
+        if (input$FAData == "FAExample") {
+            exp_raw <- read.csv("~/Code/iLipidome-website/example_data/FA_substructure_analysis/exp.csv",
                             header = TRUE,
                             sep = ",",
                             quote = "\""
                         )
-                        incProgress(1/2, detail = paste("processing"))
-
-                        def1 <- default1(exp)
-                        output$visNet1 <- renderVisNetwork({
-                            visNetwork(def1[[1]], def1[[2]]) %>%
-                                visIgraphLayout(layout = "layout_with_sugiyama", type='square',
-                                                physics = F, smooth = TRUE, randomSeed =5)
-                        })
-
-                        def2 <- default2(exp)
-                        output$visNet2 <- renderVisNetwork({
-                            visNetwork(def2[[1]], def2[[2]])
-                        })
-
-                        def3 <- default3(exp)
-                        output$visNet3 <- renderVisNetwork({
-                            visNetwork(def3[[1]], def3[[2]])
-                        })
-
-                        # add pdf logic here
-                        # if (input$dow)
-
-                        incProgress(1/2, detail = paste("done"))
-                    })
-                    
-                    output$loading <- renderText("")
-                }
-            }
-            if (input$datasetselector == "DHA") {
-                withProgress(message = "doing computation", value = 0, {
-                    exp <- read.csv("~/Code/iLipidome-website/DHA/lipidome_data/exp_DHA_raw.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-                    char <- read.csv("~/Code/iLipidome-website/DHA/lipidome_data/char_DHA.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-                    
-                    DHAres <- processDHA(exp, char)
-                    output$loadingDHA <- renderText("done")
-                })
-            }
-
-            if (input$datasetselector == "CVD") {
-                withProgress(message = "doing computation", value = 0, {
-                    exp <- read.csv("~/Code/iLipidome-website/CVD/lipidome_data/exp_CVD_raw.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\"")
-                    char <- read.csv("~/Code/iLipidome-website/CVD/lipidome_data/char_CVD.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-
-                    incProgress(1/5, detail = paste("loaded data"))
-
-                    CVDres <- processCVD(exp, char)
-
-                    #c(F6b, SF4c, SF4e, SF5c, SF4b, SF4d, SF4a, F6c, F6d1, F6d2, F6d3, F6d4, SF4g, SF4f))
-
-                    output$loadingCVD <- renderText("done")
-                })
-            }
-            if (input$datasetselector == "KO") {
-                withProgress(message = "doing computation", value = 0, {
-
-                    raw1 <- read.csv("~/Code/iLipidome-website/Lipid_gene_KO/lipidome_data/raw_data_deletion_t.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\"")
-                    raw2 <- read.csv("~/Code/iLipidome-website/Lipid_gene_KO/lipidome_data/raw_data_trap_t.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-                    
-                    KOres <- processKO(raw1, raw2)
-                    output$loadingKO <- renderText("done")
-                })
-            }
-            if (input$datasetselector == "LPCAT") {
-                withProgress(message = "doing computation", value = 0, {
-                    exp <- read.csv("~/Code/iLipidome-website/LPCAT1/lipidome_data/exp_LPCAT1_raw.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-                    char <- read.csv("~/Code/iLipidome-website/LPCAT1/lipidome_data/char_LPCAT1_raw.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-                    ogname <- read.csv("~/Code/iLipidome-website/LPCAT1/lipidome_data/lipid_original_name.csv",
-                        header = TRUE,
-                        sep = ",",
-                        quote = "\""
-                    )
-
-                    LPCATres <- processLPCAT(exp, char, ogname)
-
-                    #c(SF3a, F5c, F5d, F5b, SF5b, SF3b, F5e, SF3c, SF3d)
-
-                    output$SF3a <- renderPlot(
-                        plot(LPCATres[[1]])
-                    )
-                    output$F5c <- renderPlot(
-                        plot(LPCATres[[2]])
-                    )
-                    output$F5d <- renderPlot(
-                        plot(LPCATres[[3]])
-                    )
-                    # asdf <- LPCATres[[4]]
-                    # output$F5b <- renderVisNetwork({
-                    #         visNetwork(asdf[[1]], asdf[[2]])
-                    #     })
-                    output$SF3b <- renderPlot(
-                        plot(LPCATres[[6]])
-                    )
-                    output$F5e <- renderPlot(
-                        plot(LPCATres[[7]])
-                    )
-                    output$SF3c <- renderPlot(
-                        plot(LPCATres[[8]])
-                    )
-                    output$SF3d <- renderPlot(
-                        plot(LPCATres[[9]])
-                    )
-
-                    output$loadingLPCAT <- renderText("done")
-                })
-            }
-            if (input$datasetselector == "test") {
-            }
+            
+            FA_substructure_result <- FA_substructure_analysis(exp_raw, method='mod.t.test',
+                                                   ctrl=1:7, exp=8:13,
+                                                   unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
+                                                   exo_lipid='w3-22:6;0', species='rat')
         }
-    )
+        if (input$FAData == "FACustom") {
+            exp_raw <- read.csv(input$FAfile$datapath,
+                            header = TRUE,
+                            sep = ",",
+                            quote = "\""
+                        )
+
+            FA_substructure_result <- FA_substructure_analysis(exp_raw, method='mod.t.test',
+                                        ctrl=1:7, exp=8:13,
+                                        unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
+                                        exo_lipid='w3-22:6;0', species='rat')
+        }
+
+        output$FAPathScore <- renderTable(FA_substructure_result[[1]])
+        output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
+        output$FAReactionScore <- renderTable(FA_substructure_result[[3]])
+        output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
+        output$FANetwork <- renderVisNetwork(FA_substructure_result[[5]])
+    })
+    observeEvent(input$LSRun, {
+        
+    })
+    observeEvent(input$LCRun, {
+        
+    })
 
     output$downloadData <- downloadHandler(
         #change file paths
