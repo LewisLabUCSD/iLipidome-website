@@ -39,10 +39,10 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   
   #Extract FA substructures using fold changes
   
-  FA_sub_stop <- FA_sub_extract(char_table = char_sel,
-                    FA_substructure = FA_substructure,
-                    unprocessed_data_result = no_sub_t,
-                    exact_FA='no', exo_lipid=exo_lipid)
+  FA_sub_stop <- FA_sub_extract(char_table = char_data,
+                                FA_substructure = FA_substructure,
+                                unprocessed_data_result = no_sub_t,
+                                exact_FA='no', exo_lipid=exo_lipid)
   
   #Transform FA exp into substructure exp
   

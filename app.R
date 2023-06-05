@@ -78,40 +78,58 @@ ui <- fluidPage(
                                         accept = c("text/csv", "text/comma-separated-values", ".csv")
                                     )
                                 ),
-                            )
+                            ),
                         ),
-                        column(8, style = "background-color:#defae0; padding: 8px",
-                            h2("Parameter Selection"),
-                            radioButtons("FAMethod", "method:",
-                                c(
-                                    "t.test" = "t",
-                                    "wilcox.test" = "wilcox",
-                                    "mod.t.test" = "mod.t"
+                        column(8, style = "background-color:#defae0; padding: 5px",
+                            h3("Parameter Selection"),
+                            radioButtons("FAMethod", 
+                                label = "method:",
+                                choices = c(
+                                    "t.test" = "t.test",
+                                    "wilcox.test" = "wilcox.test",
+                                    "mod.t.test" = "mod.t.test"
+                                ),
+                                selected = "mod.t.test",
+                                inline = TRUE
+                            ),
+                            sliderInput("FActrl", 
+                                label = "ctrl:", 
+                                min = 1,
+                                max = 20,
+                                value = c(1, 7)
+                            ),
+                            sliderInput("FAexp", 
+                                label = "exp:", 
+                                min = 1,
+                                max = 20,
+                                value = c(8, 13)
+                            ),
+                            radioButtons("FAunmappedFA", 
+                                label = "unmapped FA:", 
+                                choices = c(
+                                    "default: 'w9-18:2;0','w3-20:4;0'" = "default"
                                 )
                             ),
-                            selectInput("FActrl", "ctrl:", 
-                                c()
+                            radioButtons("FAexolipid", 
+                                label = "exo lipid:", 
+                                choices = c(
+                                    "default: 'w3-22:6;0'" = "default"
+                                )
                             ),
-                            selectInput("FAexp", "exp:", 
-                                c()
-                            ),
-                            selectInput("FAunmappedFA", "unmapped FA:", 
-                                c()
-                            ),
-                            selectInput("FAexolipid", "exo lipid:", 
-                                c()
-                            ),
-                            radioButtons("FAspecies", "species:", 
-                                c(
+                            radioButtons("FAspecies", 
+                                label = "species:", 
+                                choices = c(
                                     "human" = "human",
                                     "mouse" = "mouse",
                                     "rat" = "rat"
-                                )
+                                ),
+                                selected = "rat",
+                                inline = TRUE
                             ),
                         )
                     ),
                     fluidRow(
-                        actionButton("FARun", "run code")
+                        actionButton("FARun", "run code", padding = "8px")
                     ),
                     fluidRow( # for visualizations
                         tableOutput("FAPathScore"),
@@ -225,10 +243,12 @@ server <- function(input, output, session) {
                             quote = "\""
                         )
             
-            FA_substructure_result <- FA_substructure_analysis(exp_raw, method='mod.t.test',
-                                                   ctrl=1:7, exp=8:13,
+            print(input$FActrl[1]:input$FActrl[2])
+            
+            FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
+                                                   ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
                                                    unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
-                                                   exo_lipid='w3-22:6;0', species='rat')
+                                                   exo_lipid='w3-22:6;0', species=input$FAspecies)
         }
         if (input$FAData == "FACustom") {
             exp_raw <- read.csv(input$FAfile$datapath,
@@ -237,15 +257,15 @@ server <- function(input, output, session) {
                             quote = "\""
                         )
 
-            FA_substructure_result <- FA_substructure_analysis(exp_raw, method='mod.t.test',
-                                        ctrl=1:7, exp=8:13,
+            FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
+                                        ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
                                         unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
-                                        exo_lipid='w3-22:6;0', species='rat')
+                                        exo_lipid='w3-22:6;0', species=input$FAspecies)
         }
 
-        output$FAPathScore <- renderTable(FA_substructure_result[[1]])
+        output$FAPathScore <- renderTable(head(FA_substructure_result[[1]]))
         output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
-        output$FAReactionScore <- renderTable(FA_substructure_result[[3]])
+        output$FAReactionScore <- renderTable(head(FA_substructure_result[[3]]))
         output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
         output$FANetwork <- renderVisNetwork(FA_substructure_result[[5]])
     })
