@@ -29,34 +29,14 @@ library(iLipidome)
 
 source("functions.R")
 
-load('data/required_data.RData')
+load('required_data.RData')
 
 ui <- fluidPage(
     # app title
     navbarPage(
         "iLipidome",
-        tabPanel("About",
-                value = 4,
-                fluidRow(
-                    column(6,
-                        p("about the project")
-                    ),
-                    column(6,
-                        p("authors")
-                    )
-                ),
-                fluidRow(
-                    h3("paper:"),
-                    br(),
-                    downloadButton("downloadData", "Download")
-                ),
-                fluidRow(
-                    tags$iframe(
-                        style = "height:400px; width:100%; scrolling=yes",
-                        src = "C:/Users/Evan/Code/iLipidome-website/iLipidome-paper.pdf"
-                        #edit path
-                    )
-                )
+        tabPanel("Tutorial",
+
         ),
         tabPanel("Lipid Substructure Analysis",
             tabsetPanel(
@@ -215,7 +195,38 @@ ui <- fluidPage(
                     )
                 )
             )
-        )
+        ),
+        navbarMenu("Other",
+            tabPanel("About",
+                value = 4,
+                fluidRow(
+                    column(6,
+                        p("about the project")
+                    ),
+                    column(6,
+                        p("authors")
+                    )
+                ),
+                fluidRow(
+                    h3("paper:"),
+                    br(),
+                    downloadButton("downloadData", "Download")
+                ),
+                fluidRow(
+                    tags$iframe(
+                        style = "height:400px; width:100%; scrolling=yes",
+                        src = "iLipidome-paper.pdf"
+                        #edit path
+                    )
+                )
+            ),
+            tabPanel("FAQ",
+
+            ),
+            tabPanel("Report an Issue",
+
+            ),
+        ),
     ),
     disconnectMessage()
 )
@@ -280,7 +291,7 @@ server <- function(input, output, session) {
         #change file paths
         filename = "iLipidome-paper.pdf",
         content = function(fileDownload) {
-            file.copy("C:/Users/Evan/Code/iLipidome-website/iLipidome-paper.pdf", fileDownload)
+            file.copy("iLipidome-paper.pdf", fileDownload)
         }
     )
 }

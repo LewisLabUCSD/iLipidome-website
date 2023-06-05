@@ -1,4 +1,4 @@
-load('data/required_data.RData')
+load('required_data.RData')
 
 #-------------------Analysis for unprocessed data-------------------
 # Parameters
