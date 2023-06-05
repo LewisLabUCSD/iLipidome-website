@@ -23,7 +23,7 @@ library(cowplot)
 library(ggplot2)
 library(ggvenn)
 
-# install.packages('~/iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
+install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
 
 library(iLipidome)
 
@@ -237,7 +237,7 @@ server <- function(input, output, session) {
 
     observeEvent(input$FARun, {
         if (input$FAData == "FAExample") {
-            exp_raw <- read.csv("~/Code/iLipidome-website/example_data/FA_substructure_analysis/exp.csv",
+            exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
                             header = TRUE,
                             sep = ",",
                             quote = "\""
