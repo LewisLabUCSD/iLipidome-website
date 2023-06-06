@@ -84,17 +84,13 @@ ui <- fluidPage(
                                 max = 20,
                                 value = c(8, 13)
                             ),
-                            radioButtons("FAunmappedFA", 
+                            textInput("FAunmappedFA", 
                                 label = "unmapped FA:", 
-                                choices = c(
-                                    "default: 'w9-18:2;0','w3-20:4;0'" = "default"
-                                )
+                                "w9-18:2;0, w3-20:4;0"
                             ),
-                            radioButtons("FAexolipid", 
+                            textInput("FAexolipid", 
                                 label = "exo lipid:", 
-                                choices = c(
-                                    "default: 'w3-22:6;0'" = "default"
-                                )
+                                "w3-22:6;0"
                             ),
                             radioButtons("FAspecies", 
                                 label = "species:", 
@@ -253,13 +249,15 @@ server <- function(input, output, session) {
                             sep = ",",
                             quote = "\""
                         )
-            
-            print(input$FActrl[1]:input$FActrl[2])
+
+            print(input$FAunmappedFA)
+            print(str_trim(strsplit(input$FAunmappedFA, ",")[[1]]))
+            print(input$FAexolipid)
             
             FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
                                                    ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
-                                                   unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
-                                                   exo_lipid='w3-22:6;0', species=input$FAspecies)
+                                                   unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
+                                                   exo_lipid=input$FAexolipid, species=input$FAspecies)
         }
         if (input$FAData == "FACustom") {
             exp_raw <- read.csv(input$FAfile$datapath,
@@ -270,8 +268,8 @@ server <- function(input, output, session) {
 
             FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
                                         ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
-                                        unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
-                                        exo_lipid='w3-22:6;0', species=input$FAspecies)
+                                        unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
+                                        exo_lipid=input$FAexolipid, species=input$FAspecies)
         }
 
         output$FAPathScore <- renderTable(head(FA_substructure_result[[1]]))
