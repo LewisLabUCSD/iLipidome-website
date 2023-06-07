@@ -1,13 +1,13 @@
 library(shiny)
-library(shinydisconnect)
+# library(shinydisconnect)
 
 library(tidyverse)
 library(dplyr)
 library(igraph)
 library(visNetwork)
-library(xlsx)
+# library(xlsx)
 library(data.table)
-library(MKmisc)
+# library(MKmisc)
 library(gplots)
 library(gtools)
 library(ggsci)
@@ -21,13 +21,13 @@ library(fpc)
 library(cowplot)
 
 library(ggplot2)
-library(ggvenn)
+# library(ggvenn)
 
-install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
-
-library(iLipidome)
+# install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
+# library(iLipidome)
 
 source("functions.R")
+source("required_function.R")
 
 load('required_data.RData')
 
