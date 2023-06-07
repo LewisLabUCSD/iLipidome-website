@@ -224,13 +224,13 @@ ui <- fluidPage(
             ),
         ),
     ),
-    disconnectMessage()
+    # disconnectMessage()
 )
 
 server <- function(input, output, session) {
-    observeEvent(input$disconnect, {
-        session$close()
-    })
+    # observeEvent(input$disconnect, {
+    #     session$close()
+    # })
 
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
