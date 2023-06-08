@@ -7,7 +7,7 @@ library(igraph)
 library(visNetwork)
 # library(xlsx)
 library(data.table)
-# library(MKmisc)
+library(MKmisc)
 library(gplots)
 library(gtools)
 library(ggsci)
@@ -21,6 +21,8 @@ library(fpc)
 library(cowplot)
 
 library(ggplot2)
+
+library(DT)
 # library(ggvenn)
 
 # install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
@@ -41,8 +43,8 @@ ui <- fluidPage(
         tabPanel("Lipid Substructure Analysis",
             tabsetPanel(
                 tabPanel("Fatty Acid Analysis",
-                    fluidRow(
-                        column(4, 
+                    sidebarLayout(
+                        sidebarPanel(
                             radioButtons("FAData", "Data Source",
                                 c(
                                     "Example dataset (<dataset name>)" = "FAExample",
@@ -59,8 +61,6 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
-                        ),
-                        column(8, style = "background-color:#defae0; padding: 5px",
                             h3("Parameter Selection"),
                             radioButtons("FAMethod", 
                                 label = "method:",
@@ -102,95 +102,42 @@ ui <- fluidPage(
                                 selected = "rat",
                                 inline = TRUE
                             ),
+                            actionButton("FARun", "run code", padding = "8px")
+                        ),
+                        mainPanel(
+                            tabsetPanel(
+                                tabPanel("Input Data",
+                                    DT::dataTableOutput("FAInData")
+                                ),
+                                tabPanel("Path Score",
+                                    DT::dataTableOutput("FAPathScoreDT"),
+                                    plotOutput("FAPathScorePlot"),
+                                ),
+                                tabPanel("Reaction Score",
+                                    DT::dataTableOutput("FAReactionScoreDT"),
+                                    plotOutput("FAReactionScorePlot"),
+                                ),
+                                tabPanel("Network Graph",
+                                    visNetworkOutput("FANetworkGraph")
+                                )
+                            )
                         )
-                    ),
-                    fluidRow(
-                        actionButton("FARun", "run code", padding = "8px")
-                    ),
-                    fluidRow( # for visualizations
-                        tableOutput("FAPathScore"),
-                        plotOutput("FAPathScorePlot"),
-                        tableOutput("FAReactionScore"),
-                        plotOutput("FAReactionScorePlot"),
-                        visNetworkOutput("FANetwork")
                     )
                 ),
                 tabPanel("Lipid Species Analysis",
-                    fluidRow(
-                        column(4, 
-                            radioButtons("LSData", "Data Source",
-                                c(
-                                    "Example dataset (<dataset name>)" = "LSExample",
-                                    "Upload your own data" = "LSCustom"
-                                )
-                            ),
-                            tabsetPanel(
-                                id = "LSFileIn", type = "hidden",
-                                tabPanel("LSExample"
-                                ),
-                                tabPanel("LSCustom",
-                                    fileInput("LSfile", "Choose file",
-                                        multiple = FALSE,
-                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
-                                    )
-                                ),
-                            )
-                        ),
-                        column(8, style = "background-color:#defae0;",
-                            selectInput("LSParams", "Parameter Selection:", 
-                                c(
-                                    # put params for lipid species here
-                                )
-                            ),
-                        )
-                    ),
-                    fluidRow(
-                        actionButton("LSRun", "run code")
-                    ),
-                    fluidRow( # for visualizations
+                    sidebarLayout(
+                        sidebarPanel(
 
+                        ),
+                        mainPanel(
+
+                        )
                     )
                 ),
                 tabPanel("Lipid Class Analysis",
-                    fluidRow(
-                        column(4, 
-                            radioButtons("LCData", "Data Source",
-                                c(
-                                    "Example dataset (<dataset name>)" = "LCExample",
-                                    "Upload your own data" = "LCCustom"
-                                )
-                            ),
-                            tabsetPanel(
-                                id = "LCFileIn",
-                                type = "hidden",
-                                tabPanel("LCExample"
-                                ),
-                                tabPanel("LCCustom",
-                                    fileInput(
-                                        "LCfile",
-                                        "Choose file",
-                                        multiple = FALSE,
-                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
-                                    )
-                                ),
-                            )
-                        ),
-                        column(8, style = "background-color:#defae0;",
-                            selectInput("LCParams", "Parameter Selection:", 
-                                c(
-                                    # put params for lipid class here
-                                )
-                            ),
-                        )
-                    ),
-                    fluidRow(
-                        actionButton("LCRun", "run code")
-                    ),
-                    fluidRow( # for visualizations
-
-                    )
+                        
                 )
-            )
+            ),
         ),
         navbarMenu("Other",
             tabPanel("About",
@@ -232,6 +179,8 @@ server <- function(input, output, session) {
     #     session$close()
     # })
 
+    output$testimage <- renderText('asdfghjklasdfhjklasdf')
+
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
     })
@@ -272,11 +221,20 @@ server <- function(input, output, session) {
                                         exo_lipid=input$FAexolipid, species=input$FAspecies)
         }
 
-        output$FAPathScore <- renderTable(head(FA_substructure_result[[1]]))
+        output$FAInData <- DT::renderDataTable({
+            DT::datatable(exp_raw, options = list(orderClasses = TRUE))
+        })
+        output$FAPathScoreDT <- DT::renderDataTable({
+            DT::datatable(FA_substructure_result[[1]], options = list(orderClasses = TRUE))
+        })
         output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
-        output$FAReactionScore <- renderTable(head(FA_substructure_result[[3]]))
+
+        output$FAReactionScoreDT <- DT::renderDataTable({
+            DT::datatable(FA_substructure_result[[3]], options = list(orderClasses = TRUE))
+        })
         output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
-        output$FANetwork <- renderVisNetwork(FA_substructure_result[[5]])
+
+        output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
     })
     observeEvent(input$LSRun, {
         
