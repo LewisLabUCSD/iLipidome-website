@@ -7,7 +7,7 @@ library(igraph)
 library(visNetwork)
 # library(xlsx)
 library(data.table)
-library(MKmisc)
+# library(MKmisc)
 library(gplots)
 library(gtools)
 library(ggsci)
@@ -67,7 +67,7 @@ ui <- fluidPage(
                                 choices = c(
                                     "t.test" = "t.test",
                                     "wilcox.test" = "wilcox.test",
-                                    "mod.t.test" = "mod.t.test"
+                                    # "mod.t.test" = "mod.t.test"
                                 ),
                                 selected = "mod.t.test",
                                 inline = TRUE
@@ -135,7 +135,14 @@ ui <- fluidPage(
                     )
                 ),
                 tabPanel("Lipid Class Analysis",
-                        
+                    sidebarLayout(
+                        sidebarPanel(
+
+                        ),
+                        mainPanel(
+
+                        )
+                    )
                 )
             ),
         ),
@@ -178,8 +185,6 @@ server <- function(input, output, session) {
     # observeEvent(input$disconnect, {
     #     session$close()
     # })
-
-    output$testimage <- renderText('asdfghjklasdfhjklasdf')
 
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
