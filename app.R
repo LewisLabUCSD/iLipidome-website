@@ -66,10 +66,10 @@ ui <- fluidPage(
                                 label = "method:",
                                 choices = c(
                                     "t.test" = "t.test",
-                                    "wilcox.test" = "wilcox.test",
+                                    "wilcox.test" = "wilcox.test"
                                     # "mod.t.test" = "mod.t.test"
                                 ),
-                                selected = "mod.t.test",
+                                selected = "t.test",
                                 inline = TRUE
                             ),
                             sliderInput("FActrl", 
@@ -105,7 +105,7 @@ ui <- fluidPage(
                             actionButton("FARun", "run code", padding = "8px")
                         ),
                         mainPanel(
-                            tabsetPanel(
+                            tabsetPanel( # tabPanels for visualizations
                                 tabPanel("Input Data",
                                     DT::dataTableOutput("FAInData")
                                 ),
@@ -174,7 +174,11 @@ ui <- fluidPage(
 
             ),
             tabPanel("Report an Issue",
-
+                p("If you encounter any issues with iLipidome, please send an email 
+                    to <email_address> detailing the issue. Please put the name of the 
+                    issue in the subject line and include any relevant screenshots and/or 
+                    error messages"
+                )
             ),
         ),
     ),
