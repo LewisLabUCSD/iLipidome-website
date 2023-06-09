@@ -127,20 +127,158 @@ ui <- fluidPage(
                 tabPanel("Lipid Species Analysis",
                     sidebarLayout(
                         sidebarPanel(
-
+                            radioButtons("LSData", "Data Source",
+                                c(
+                                    "Example dataset (<dataset name>)" = "LSExample",
+                                    "Upload your own data" = "LSCustom"
+                                )
+                            ),
+                            tabsetPanel(id = "LSFileIn", type = "hidden",
+                                tabPanel("LSExample"
+                                ),
+                                tabPanel("LSCustom",
+                                    fileInput("LSfile", "Choose file",
+                                        multiple = FALSE,
+                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                    )
+                                ),
+                            ),
+                            h3("Parameter Selection"),
+                            radioButtons("LSMethod", 
+                                label = "method:",
+                                choices = c(
+                                    "t.test" = "t.test",
+                                    "wilcox.test" = "wilcox.test"
+                                ),
+                                selected = "t.test",
+                                inline = TRUE
+                            ),
+                            sliderInput("LSctrl", 
+                                label = "ctrl:", 
+                                min = 1,
+                                max = 20,
+                                value = c(1, 7)
+                            ),
+                            sliderInput("LSexp", 
+                                label = "exp:", 
+                                min = 1,
+                                max = 20,
+                                value = c(8, 13)
+                            ),
+                            textInput("LSnonMissingPCT", #ASK ABOUT THIS
+                                label = "non missing pct", 
+                                NULL
+                            ),
+                            textInput("LSexolipid", 
+                                label = "exo lipid:", 
+                                NULL
+                            ),
+                            radioButtons("LSspecies", 
+                                label = "species:", 
+                                choices = c(
+                                    "human" = "human",
+                                    "mouse" = "mouse",
+                                    "rat" = "rat"
+                                ),
+                                selected = "rat",
+                                inline = TRUE
+                            ),
+                            actionButton("LSRun", "run code", padding = "8px")
                         ),
                         mainPanel(
-
+                            tabsetPanel( # tabPanels for visualizations
+                                tabPanel("Input Data",
+                                    DT::dataTableOutput("LSInData")
+                                ),
+                                tabPanel("Path Score",
+                                    DT::dataTableOutput("LSPathScoreDT"),
+                                    plotOutput("LSPathScorePlot"),
+                                ),
+                                tabPanel("Reaction Score",
+                                    DT::dataTableOutput("LSReactionScoreDT"),
+                                    plotOutput("LSReactionScorePlot"),
+                                ),
+                                tabPanel("Network Graph",
+                                    visNetworkOutput("LSNetworkGraph")
+                                )
+                            )
                         )
                     )
                 ),
                 tabPanel("Lipid Class Analysis",
                     sidebarLayout(
                         sidebarPanel(
-
+                            radioButtons("LCData", "Data Source",
+                                c(
+                                    "Example dataset (<dataset name>)" = "LCExample",
+                                    "Upload your own data" = "LCCustom"
+                                )
+                            ),
+                            tabsetPanel(id = "LCFileIn", type = "hidden",
+                                tabPanel("LCExample"
+                                ),
+                                tabPanel("LCCustom",
+                                    fileInput("LCfile", "Choose file",
+                                        multiple = FALSE,
+                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                    )
+                                ),
+                            ),
+                            h3("Parameter Selection"),
+                            radioButtons("LCMethod", 
+                                label = "method:",
+                                choices = c(
+                                    "t.test" = "t.test",
+                                    "wilcox.test" = "wilcox.test"
+                                ),
+                                selected = "t.test",
+                                inline = TRUE
+                            ),
+                            sliderInput("LCctrl", 
+                                label = "ctrl:", 
+                                min = 1,
+                                max = 20,
+                                value = c(1, 7)
+                            ),
+                            sliderInput("LCexp", 
+                                label = "exp:", 
+                                min = 1,
+                                max = 20,
+                                value = c(8, 13)
+                            ),
+                            textInput("LCexolipid", 
+                                label = "exo lipid:", 
+                                NULL
+                            ),
+                            radioButtons("LCspecies", 
+                                label = "species:", 
+                                choices = c(
+                                    "human" = "human",
+                                    "mouse" = "mouse",
+                                    "rat" = "rat"
+                                ),
+                                selected = "rat",
+                                inline = TRUE
+                            ),
+                            actionButton("LCRun", "run code", padding = "8px")
                         ),
                         mainPanel(
-
+                            tabsetPanel( # tabPanels for visualizations
+                                tabPanel("Input Data",
+                                    DT::dataTableOutput("LCInData")
+                                ),
+                                tabPanel("Path Score",
+                                    DT::dataTableOutput("LCPathScoreDT"),
+                                    plotOutput("LCPathScorePlot"),
+                                ),
+                                tabPanel("Reaction Score",
+                                    DT::dataTableOutput("LCReactionScoreDT"),
+                                    plotOutput("LCReactionScorePlot"),
+                                ),
+                                tabPanel("Network Graph",
+                                    visNetworkOutput("LCNetworkGraph")
+                                )
+                            )
                         )
                     )
                 )
@@ -202,36 +340,30 @@ server <- function(input, output, session) {
 
     observeEvent(input$FARun, {
         if (input$FAData == "FAExample") {
-            exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
+            FA_exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
                             header = TRUE,
                             sep = ",",
                             quote = "\""
                         )
-
-            print(input$FAunmappedFA)
-            print(str_trim(strsplit(input$FAunmappedFA, ",")[[1]]))
-            print(input$FAexolipid)
-            
-            FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
-                                                   ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
-                                                   unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
-                                                   exo_lipid=input$FAexolipid, species=input$FAspecies)
         }
         if (input$FAData == "FACustom") {
-            exp_raw <- read.csv(input$FAfile$datapath,
+            validate(
+                need(input$FAfile$datapath != NULL, "Please select a file")
+            )
+            FA_exp_raw <- read.csv(input$FAfile$datapath,
                             header = TRUE,
                             sep = ",",
                             quote = "\""
                         )
+        }
 
-            FA_substructure_result <- FA_substructure_analysis(exp_raw, method=input$FAMethod,
+        FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method=input$FAMethod,
                                         ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
                                         unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
                                         exo_lipid=input$FAexolipid, species=input$FAspecies)
-        }
 
         output$FAInData <- DT::renderDataTable({
-            DT::datatable(exp_raw, options = list(orderClasses = TRUE))
+            DT::datatable(FA_exp_raw, options = list(orderClasses = TRUE))
         })
         output$FAPathScoreDT <- DT::renderDataTable({
             DT::datatable(FA_substructure_result[[1]], options = list(orderClasses = TRUE))
@@ -246,10 +378,76 @@ server <- function(input, output, session) {
         output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
     })
     observeEvent(input$LSRun, {
-        
+        if (input$LSData == "LSExample") {
+            LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp.csv",
+                            header = TRUE,
+                            sep = ",",
+                            quote = "\""
+                        )
+        }
+        if (input$LSData == "LSCustom") {
+            LS_exp_raw <- read.csv(input$LSfile$datapath,
+                            header = TRUE,
+                            sep = ",",
+                            quote = "\""
+                        )
+        }
+
+        LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method=input$LSMethod,
+                                                                        ctrl=input$LSctrl[1]:input$LSctrl[2], exp=input$LSexp[1]:input$LSexp[2],
+                                                                        non_missing_pct = 0.3,
+                                                                        exo_lipid=NULL, species=input$LSspecies) 
+                                                                        #FIGURE OUT WHAT NON_MISSING_PCT IS AND HOW TO PASS NULL
+
+        output$LSInData <- DT::renderDataTable({
+            DT::datatable(LS_exp_raw, options = list(orderClasses = TRUE))
+        })
+        output$LSPathScoreDT <- DT::renderDataTable({
+            DT::datatable(LS_substructure_result[[1]], options = list(orderClasses = TRUE))
+        })
+        output$LSPathScorePlot <- renderPlot(plot(LS_substructure_result[[2]]))
+
+        output$LSReactionScoreDT <- DT::renderDataTable({
+            DT::datatable(LS_substructure_result[[3]], options = list(orderClasses = TRUE))
+        })
+        output$LSReactionScorePlot <- renderPlot(plot(LS_substructure_result[[4]]))
+
+        output$LSNetworkGraph <- renderVisNetwork(LS_substructure_result[[5]])
     })
     observeEvent(input$LCRun, {
-        
+        if (input$LCData == "LCExample") {
+            LC_exp_raw <- read.csv("example_data/lipid_class_substructure_analysis/exp.csv",
+                            header = TRUE,
+                            sep = ",",
+                            quote = "\""
+                        )
+        }
+        if (input$LCData == "LCCustom") {
+            LC_exp_raw <- read.csv(input$LCfile$datapath,
+                            header = TRUE,
+                            sep = ",",
+                            quote = "\""
+                        )
+        }
+        print("a")
+        LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method=input$LCMethod,
+                                                   ctrl=input$LCctrl[1]:input$LCctrl[2], exp=input$LCexp[1]:input$LCexp[2],
+                                                   exo_lipid=NULL, species=input$LCspecies)
+
+        output$LCInData <- DT::renderDataTable({
+            DT::datatable(LC_exp_raw, options = list(orderClasses = TRUE))
+        })
+        output$LCPathScoreDT <- DT::renderDataTable({
+            DT::datatable(LC_substructure_result[[1]], options = list(orderClasses = TRUE))
+        })
+        output$LCPathScorePlot <- renderPlot(plot(LC_substructure_result[[2]]))
+
+        output$LCReactionScoreDT <- DT::renderDataTable({
+            DT::datatable(LC_substructure_result[[3]], options = list(orderClasses = TRUE))
+        })
+        output$LCReactionScorePlot <- renderPlot(plot(LC_substructure_result[[4]]))
+
+        output$LCNetworkGraph <- renderVisNetwork(LC_substructure_result[[5]])
     })
 
     output$downloadData <- downloadHandler(
