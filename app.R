@@ -368,6 +368,8 @@ server <- function(input, output, session) {
         output$FAReactionScorePlot <- NULL
         output$FANetworkGraph <- NULL
 
+        FA_substructure_result <- NULL
+
         if (input$FAData == "FAExample") {
             FA_exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
                             header = TRUE,
@@ -408,7 +410,23 @@ server <- function(input, output, session) {
             output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
 
             # if download box is selected, download tables and plots
-            
+            if (input$FADownload) {
+                write.csv(FA_substructure_result[[1]], file = "FA_Path_Score.csv")
+                # png(filename = "downloads/FA_Path_Score_img.png")
+                # plot(FA_substructure_result[[2]])
+                # dev.off()
+
+                write.csv(FA_substructure_result[[3]], file = "FA_Reaction_Score.csv")
+                # png(filename = "downloads/FA_Reaction_Score_img.png")
+                # plot(FA_substructure_result[[4]])
+                # dev.off()
+
+                pdf("FA_plots.pdf")
+                plot(FA_substructure_result[[2]])
+                plot(FA_substructure_result[[4]])
+                FA_substructure_result[[5]]
+                dev.off()
+            }
         }
         else {
             #figure out how to show FA_format error to user
