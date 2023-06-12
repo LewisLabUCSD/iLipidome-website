@@ -542,7 +542,7 @@ check_data_format <- function(exp_data){
   
   ckeck_value <- !map_chr(exp_data, ~class(.x))[-1] %in% c('numeric','integer')
   
-  ckeck_feature_name <- colnames(exp_data)!='feature'
+  ckeck_feature_name <- colnames(exp_data)[1]!='feature'
   
   if(ckeck_feature || sum(ckeck_value)!=0 || ckeck_feature_name){
     warning_message <- "! Please ensure that the first column's name is 'feature' and it is a string variable, while the remaining columns are numeric variables."
