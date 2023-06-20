@@ -443,7 +443,7 @@ server <- function(input, output, session) {
         output$LSNetworkGraph <- NULL
 
         if (input$LSData == "LSExample") {
-            LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp.csv",
+            LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp2.csv",
                             header = TRUE,
                             sep = ",",
                             quote = "\""
