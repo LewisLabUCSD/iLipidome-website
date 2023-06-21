@@ -84,15 +84,109 @@ ui <- fluidPage(
                                 max = 20,
                                 value = c(8, 13)
                             ),
-                            selectInput("FAunmappedFA", 
+                            textInput("FAunmappedFA", 
                                 label = "unmapped FA:", 
-                                choices = c(
-                                    "w9-18:2;0, w3-20:4;0"
-                                )
+                                value = "w9-18:2;0, w3-20:4;0"
                             ),
                             selectInput("FAexolipid", 
                                 label = "exo lipid:", 
                                 choices = c(
+                                    "w3-22:6;0",
+                                    "FA",
+                                    "16:0;0",
+                                    "18:0;0",
+                                    "20:0;0",
+                                    "22:0;0",
+                                    "24:0;0",
+                                    "26:0;0",
+                                    "16:0;0",
+                                    "w7-16:1;0",
+                                    "16:0;0",
+                                    "18:0;0",
+                                    "w9-18:1;0",
+                                    "w9-18:1;0",
+                                    "w9-20:1;0",
+                                    "w9-18:2;0",
+                                    "w9-20:2;0",
+                                    "w9-20:1;0",
+                                    "w9-22:1;0",
+                                    "w9-24:1;0",
+                                    "w6-18:2;0",
+                                    "w6-18:3;0",
+                                    "w6-20:3;0",
+                                    "w6-20:4;0",
+                                    "w6-22:4;0",
+                                    "w6-24:4;0",
+                                    "w6-26:4;0",
+                                    "w6-24:4;0",
+                                    "w6-24:5;0",
+                                    "w6-24:5;0",
+                                    "w6-22:5;0",
+                                    "w6-22:4;0",
+                                    "w6-26:5;0",
+                                    "w3-18:3;0",
+                                    "w3-18:4;0",
+                                    "w3-20:4;0",
+                                    "w3-20:5;0",
+                                    "w3-22:5;0",
+                                    "w3-24:5;0",
+                                    "w3-26:5;0",
+                                    "w3-24:5;0",
+                                    "w3-24:6;0",
+                                    "w3-24:6;0",
+                                    "w3-26:6;0",
+                                    "w3-22:6;0",
+                                    "w3-22:5;0",
+                                    "4:0;0",
+                                    "6:0;0",
+                                    "8:0;0",
+                                    "10:0;0",
+                                    "12:0;0",
+                                    "14:0;0",
+                                    "16:0;0",
+                                    "18:0;0",
+                                    "20:0;0",
+                                    "22:0;0",
+                                    "24:0;0",
+                                    "26:0;0",
+                                    "28:0;0",
+                                    "w7-16:1;0",
+                                    "w7-18:1;0",
+                                    "w10-16:1;0",
+                                    "w9-18:1;0",
+                                    "w9-18:2;0",
+                                    "w9-20:1;0",
+                                    "w9-20:2;0",
+                                    "w9-20:2;0",
+                                    "w9-20:3;0",
+                                    "w9-22:1;0",
+                                    "w9-24:1;0",
+                                    "w9-26:1;0",
+                                    "w6-18:3;0",
+                                    "w6-20:3;0",
+                                    "w6-20:4;0",
+                                    "w6-22:4;0",
+                                    "w6-24:4;0",
+                                    "w6-26:4;0",
+                                    "w6-28:4;0",
+                                    "w6-24:5;0",
+                                    "w6-22:5;0",
+                                    "w6-26:5;0",
+                                    "w6-24:5;0",
+                                    "w6-22:5;0",
+                                    "w6-28:5;0",
+                                    "w3-18:4;0",
+                                    "w3-20:4;0",
+                                    "w3-20:5;0",
+                                    "w3-22:5;0",
+                                    "w3-24:5;0",
+                                    "w3-26:5;0",
+                                    "w3-28:5;0",
+                                    "w3-24:6;0",
+                                    "w3-22:6;0",
+                                    "w3-26:6;0",
+                                    "w3-28:6;0",
+                                    "w3-24:6;0",
                                     "w3-22:6;0"
                                 )
                             ),
@@ -386,16 +480,15 @@ server <- function(input, output, session) {
         }
 
         FA_format <- check_data_format(FA_exp_raw)
-        print(FA_format)
 
         if (length(FA_format) == 0) {
-            FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method=input$FAMethod,
-                                        ctrl=input$FActrl[1]:input$FActrl[2], exp=input$FAexp[1]:input$FAexp[2],
+            FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
+                                        ctrl = input$FActrl[1]:input$FActrl[2], exp = input$FAexp[1]:input$FAexp[2],
                                         unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
-                                        exo_lipid=input$FAexolipid, species=input$FAspecies)
-            
+                                        exo_lipid = input$FAexolipid, species = input$FAspecies)
+
             output$FAInData <- DT::renderDataTable({
-                DT::datatable(FA_exp_raw, options = list(orderClasses = TRUE))
+                DT::datatable(format(FA_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$FAPathScoreDT <- DT::renderDataTable({
                 DT::datatable(FA_substructure_result[[1]], options = list(orderClasses = TRUE))
@@ -408,25 +501,6 @@ server <- function(input, output, session) {
             output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
 
             output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
-
-            # if download box is selected, download tables and plots
-            if (input$FADownload) {
-                write.csv(FA_substructure_result[[1]], file = "FA_Path_Score.csv")
-                # png(filename = "downloads/FA_Path_Score_img.png")
-                # plot(FA_substructure_result[[2]])
-                # dev.off()
-
-                write.csv(FA_substructure_result[[3]], file = "FA_Reaction_Score.csv")
-                # png(filename = "downloads/FA_Reaction_Score_img.png")
-                # plot(FA_substructure_result[[4]])
-                # dev.off()
-
-                pdf("FA_plots.pdf")
-                plot(FA_substructure_result[[2]])
-                plot(FA_substructure_result[[4]])
-                FA_substructure_result[[5]]
-                dev.off()
-            }
         }
         else {
             #figure out how to show FA_format error to user
