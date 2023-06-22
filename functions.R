@@ -452,7 +452,8 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
                                     calibrate = T, data_type = 'Class')
   
   
-  path_score_sel <- path_score %>% filter(Significant=='yes')
+  path_score_sel <- path_score %>% filter(Significant=='yes') %>% 
+    mutate(Type=ifelse(Type=='Active','Increase','Decrease'))
   
   if(nrow(path_score_sel)==0){
     path_data_fig <- NA
@@ -460,14 +461,29 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   }
   else{
     path_data <- rbind(path_score_sel %>% 
-                         filter(Type=='Suppressed') %>% 
+                         filter(Type=='Decrease') %>% 
                          arrange(cal_score) %>% .[!duplicated(.$rep_sub_path),]%>% .[1:5,],
                        path_score_sel %>% 
-                         filter(Type=='Active') %>% 
+                         filter(Type=='Increase') %>% 
                          .[!duplicated(.$rep_sub_path),]%>% .[1:5,]) %>% 
-      filter(Significant=='yes')
+      filter(Significant=='yes')  %>% 
+      dplyr::select(-score)
     
     
+    add_suffix <- function(strings) {
+      counts <- table(strings)
+      duplicated_indices <- which(duplicated(strings))
+      
+      for (index in duplicated_indices) {
+        count <- counts[strings[index]]
+        strings[index] <- paste(strings[index], paste0("(", count, ")"), sep = "")
+        counts[strings[index]] <- count + 2
+      }
+      
+      return(strings)
+    }
+    path_data$path <- str_split(path_data$path, ' --> ') %>% map_chr(~str_c(.x[[1]], ' --> ', last(.x)))
+    path_data$path <- add_suffix(path_data$path)
     
     path_data_fig <- path_data %>% 
       mutate(path=factor(.$path, levels = .$path)) %>% 
@@ -477,15 +493,16 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       geom_hline(yintercept = c(-1.96,1.96), linetype='dashed',color='gray')+
       coord_flip()+
       theme_bw()+
-      #scale_y_continuous(limits = c(-7,7))+
-      scale_fill_manual(values = bluered(100)[c(1,100)])+
-      theme(legend.position='none',
-            plot.title = element_text(hjust = 0.5),
-            axis.text.y = element_text(size=8))+
-      labs(x='', y='Path score',
+      scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue"))+
+      theme(legend.position='top',
+            plot.title = element_text(hjust = 0.5))+
+      labs(x='', y='Pathway score',
            title='Top 5 representative pathways')
   }
   
+  path_score_sel <- path_score_sel[,c('path', 'from', 'to', 'cal_score', 'Type', 'rep_sub_path')]
+  
+  colnames(path_score_sel) <- c('Pathway', 'From', 'To', 'Score', 'Type', 'Representative pathway')
   
   
   print('Pathway analysis complete.')
@@ -501,9 +518,8 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   
   reaction_score_sel <- 
     reaction_score[,c("edge_name", "p_value", "mlog10p",
-                         'perturbation_score' ,'edge_type', 'genes')] %>% 
+                      'perturbation_score' ,'Mode', 'genes')] %>% 
     filter(p_value<0.05)
-  
   
   if(nrow(reaction_score_sel)==0){
     reaction_data_fig <- NA
@@ -517,7 +533,6 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     
     
     reaction_data <- reaction_data %>% 
-      mutate(Edge_direction=ifelse(edge_type==Mode, 'Same as\nreaction', '')) %>% 
       mutate(node1=str_split(.$edge_name, ' --> ') %>% map_chr(.f = function(x){x[1]}),
              node2=str_split(.$edge_name, ' --> ') %>% map_chr(.f = function(x){x[2]})) %>% 
       mutate(node1_color=ifelse(node1_log2FC>0, paste0("<i style='color:#FF0000'>", node1, ' --> ',"</i>"),
@@ -529,8 +544,6 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     
     
     reaction_data_fig <- reaction_data %>%
-      mutate(Mode=factor(Mode, levels = c("Increase","Decrease"))) %>% 
-      mutate(Edge_direction=factor(Edge_direction, levels = c("Same as\nreaction",""))) %>% 
       ggplot(aes(x=perturbation_score, y=reorder(edge_name, perturbation_score), 
                  fill=Mode, color=Edge_direction))+
       geom_bar(stat='identity', size=0.8)+
@@ -539,15 +552,13 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       ) +
       geom_vline(xintercept = 0)+
       theme_bw()+
-      theme(legend.position = 'right', 
+      theme(legend.position = 'top', 
             axis.text.y = element_markdown(),
             plot.title = element_text(hjust = 0.5))+
       scale_fill_manual(values = rev(pal_lancet()(2)))+
-      scale_color_manual(values = c('gold','white'))+
+      scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue"))+
       labs(y='', fill='Reaction', x='Perturbation score', 
-           title='Top 5 significant edges',color='Edge type')+
-      guides(fill=guide_legend(order=1),
-             color=guide_legend(order=2))
+           title='Top 5 significant reactions')
   }
   print('Reaction analysis complete.')
   
