@@ -16,7 +16,7 @@ library(gridExtra)
 library(ggrepel)
 library(ggtext)
 
-library(ComplexHeatmap)
+# library(ComplexHeatmap)
 library(fpc)
 library(cowplot)
 
@@ -61,144 +61,150 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
-                            h3("Parameter Selection"),
-                            radioButtons("FAMethod", 
-                                label = "method:",
-                                choices = c(
-                                    "t.test" = "t.test",
-                                    "wilcox.test" = "wilcox.test"
-                                    # "mod.t.test" = "mod.t.test"
+                            tabsetPanel(id = "FAparams", type = "hidden",
+                                tabPanel("FAExample"
                                 ),
-                                selected = "t.test",
-                                inline = TRUE
-                            ),
-                            sliderInput("FActrl", 
-                                label = "ctrl:", 
-                                min = 1,
-                                max = 20,
-                                value = c(1, 7)
-                            ),
-                            sliderInput("FAexp", 
-                                label = "exp:", 
-                                min = 1,
-                                max = 20,
-                                value = c(8, 13)
-                            ),
-                            textInput("FAunmappedFA", 
-                                label = "unmapped FA:", 
-                                value = "w9-18:2;0, w3-20:4;0"
-                            ),
-                            selectInput("FAexolipid", 
-                                label = "exo lipid:", 
-                                choices = c(
-                                    "w3-22:6;0",
-                                    "FA",
-                                    "16:0;0",
-                                    "18:0;0",
-                                    "20:0;0",
-                                    "22:0;0",
-                                    "24:0;0",
-                                    "26:0;0",
-                                    "16:0;0",
-                                    "w7-16:1;0",
-                                    "16:0;0",
-                                    "18:0;0",
-                                    "w9-18:1;0",
-                                    "w9-18:1;0",
-                                    "w9-20:1;0",
-                                    "w9-18:2;0",
-                                    "w9-20:2;0",
-                                    "w9-20:1;0",
-                                    "w9-22:1;0",
-                                    "w9-24:1;0",
-                                    "w6-18:2;0",
-                                    "w6-18:3;0",
-                                    "w6-20:3;0",
-                                    "w6-20:4;0",
-                                    "w6-22:4;0",
-                                    "w6-24:4;0",
-                                    "w6-26:4;0",
-                                    "w6-24:4;0",
-                                    "w6-24:5;0",
-                                    "w6-24:5;0",
-                                    "w6-22:5;0",
-                                    "w6-22:4;0",
-                                    "w6-26:5;0",
-                                    "w3-18:3;0",
-                                    "w3-18:4;0",
-                                    "w3-20:4;0",
-                                    "w3-20:5;0",
-                                    "w3-22:5;0",
-                                    "w3-24:5;0",
-                                    "w3-26:5;0",
-                                    "w3-24:5;0",
-                                    "w3-24:6;0",
-                                    "w3-24:6;0",
-                                    "w3-26:6;0",
-                                    "w3-22:6;0",
-                                    "w3-22:5;0",
-                                    "4:0;0",
-                                    "6:0;0",
-                                    "8:0;0",
-                                    "10:0;0",
-                                    "12:0;0",
-                                    "14:0;0",
-                                    "16:0;0",
-                                    "18:0;0",
-                                    "20:0;0",
-                                    "22:0;0",
-                                    "24:0;0",
-                                    "26:0;0",
-                                    "28:0;0",
-                                    "w7-16:1;0",
-                                    "w7-18:1;0",
-                                    "w10-16:1;0",
-                                    "w9-18:1;0",
-                                    "w9-18:2;0",
-                                    "w9-20:1;0",
-                                    "w9-20:2;0",
-                                    "w9-20:2;0",
-                                    "w9-20:3;0",
-                                    "w9-22:1;0",
-                                    "w9-24:1;0",
-                                    "w9-26:1;0",
-                                    "w6-18:3;0",
-                                    "w6-20:3;0",
-                                    "w6-20:4;0",
-                                    "w6-22:4;0",
-                                    "w6-24:4;0",
-                                    "w6-26:4;0",
-                                    "w6-28:4;0",
-                                    "w6-24:5;0",
-                                    "w6-22:5;0",
-                                    "w6-26:5;0",
-                                    "w6-24:5;0",
-                                    "w6-22:5;0",
-                                    "w6-28:5;0",
-                                    "w3-18:4;0",
-                                    "w3-20:4;0",
-                                    "w3-20:5;0",
-                                    "w3-22:5;0",
-                                    "w3-24:5;0",
-                                    "w3-26:5;0",
-                                    "w3-28:5;0",
-                                    "w3-24:6;0",
-                                    "w3-22:6;0",
-                                    "w3-26:6;0",
-                                    "w3-28:6;0",
-                                    "w3-24:6;0",
-                                    "w3-22:6;0"
-                                )
-                            ),
-                            radioButtons("FAspecies", 
-                                label = "species:", 
-                                choices = c(
-                                    "human" = "human",
-                                    "mouse" = "mouse",
-                                    "rat" = "rat"
+                                tabPanel("FACustom",
+                                    h3("Parameter Selection"),
+                                    radioButtons("FAMethod", 
+                                        label = "method:",
+                                        choices = c(
+                                            "t.test" = "t.test",
+                                            "wilcox.test" = "wilcox.test"
+                                            # "mod.t.test" = "mod.t.test"
+                                        ),
+                                        selected = "t.test",
+                                        inline = TRUE
+                                    ),
+                                    sliderInput("FActrl", 
+                                        label = "ctrl:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(1, 7)
+                                    ),
+                                    sliderInput("FAexp", 
+                                        label = "exp:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(8, 13)
+                                    ),
+                                    textInput("FAunmappedFA", 
+                                        label = "unmapped FA:", 
+                                        value = "w9-18:2;0, w3-20:4;0"
+                                    ),
+                                    selectInput("FAexolipid", 
+                                        label = "exo lipid:", 
+                                        choices = c(
+                                            "w3-22:6;0",
+                                            "FA",
+                                            "16:0;0",
+                                            "18:0;0",
+                                            "20:0;0",
+                                            "22:0;0",
+                                            "24:0;0",
+                                            "26:0;0",
+                                            "16:0;0",
+                                            "w7-16:1;0",
+                                            "16:0;0",
+                                            "18:0;0",
+                                            "w9-18:1;0",
+                                            "w9-18:1;0",
+                                            "w9-20:1;0",
+                                            "w9-18:2;0",
+                                            "w9-20:2;0",
+                                            "w9-20:1;0",
+                                            "w9-22:1;0",
+                                            "w9-24:1;0",
+                                            "w6-18:2;0",
+                                            "w6-18:3;0",
+                                            "w6-20:3;0",
+                                            "w6-20:4;0",
+                                            "w6-22:4;0",
+                                            "w6-24:4;0",
+                                            "w6-26:4;0",
+                                            "w6-24:4;0",
+                                            "w6-24:5;0",
+                                            "w6-24:5;0",
+                                            "w6-22:5;0",
+                                            "w6-22:4;0",
+                                            "w6-26:5;0",
+                                            "w3-18:3;0",
+                                            "w3-18:4;0",
+                                            "w3-20:4;0",
+                                            "w3-20:5;0",
+                                            "w3-22:5;0",
+                                            "w3-24:5;0",
+                                            "w3-26:5;0",
+                                            "w3-24:5;0",
+                                            "w3-24:6;0",
+                                            "w3-24:6;0",
+                                            "w3-26:6;0",
+                                            "w3-22:6;0",
+                                            "w3-22:5;0",
+                                            "4:0;0",
+                                            "6:0;0",
+                                            "8:0;0",
+                                            "10:0;0",
+                                            "12:0;0",
+                                            "14:0;0",
+                                            "16:0;0",
+                                            "18:0;0",
+                                            "20:0;0",
+                                            "22:0;0",
+                                            "24:0;0",
+                                            "26:0;0",
+                                            "28:0;0",
+                                            "w7-16:1;0",
+                                            "w7-18:1;0",
+                                            "w10-16:1;0",
+                                            "w9-18:1;0",
+                                            "w9-18:2;0",
+                                            "w9-20:1;0",
+                                            "w9-20:2;0",
+                                            "w9-20:2;0",
+                                            "w9-20:3;0",
+                                            "w9-22:1;0",
+                                            "w9-24:1;0",
+                                            "w9-26:1;0",
+                                            "w6-18:3;0",
+                                            "w6-20:3;0",
+                                            "w6-20:4;0",
+                                            "w6-22:4;0",
+                                            "w6-24:4;0",
+                                            "w6-26:4;0",
+                                            "w6-28:4;0",
+                                            "w6-24:5;0",
+                                            "w6-22:5;0",
+                                            "w6-26:5;0",
+                                            "w6-24:5;0",
+                                            "w6-22:5;0",
+                                            "w6-28:5;0",
+                                            "w3-18:4;0",
+                                            "w3-20:4;0",
+                                            "w3-20:5;0",
+                                            "w3-22:5;0",
+                                            "w3-24:5;0",
+                                            "w3-26:5;0",
+                                            "w3-28:5;0",
+                                            "w3-24:6;0",
+                                            "w3-22:6;0",
+                                            "w3-26:6;0",
+                                            "w3-28:6;0",
+                                            "w3-24:6;0",
+                                            "w3-22:6;0"
+                                        )
+                                    ),
+                                    radioButtons("FAspecies", 
+                                        label = "species:", 
+                                        choices = c(
+                                            "human" = "human",
+                                            "mouse" = "mouse",
+                                            "rat" = "rat"
+                                        ),
+                                        selected = "rat",
+                                        inline = TRUE
+                                    ),
                                 ),
-                                selected = "rat",
-                                inline = TRUE
                             ),
                             checkboxInput("FADownload",
                                 "Download Tables and Plots"
@@ -245,49 +251,55 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
-                            h3("Parameter Selection"),
-                            radioButtons("LSMethod", 
-                                label = "method:",
-                                choices = c(
-                                    "t.test" = "t.test",
-                                    "wilcox.test" = "wilcox.test"
+                            tabsetPanel(id = "LSparams", type = "hidden",
+                                tabPanel("LSExample"
                                 ),
-                                selected = "t.test",
-                                inline = TRUE
-                            ),
-                            sliderInput("LSctrl", 
-                                label = "ctrl:", 
-                                min = 1,
-                                max = 20,
-                                value = c(1, 7)
-                            ),
-                            sliderInput("LSexp", 
-                                label = "exp:", 
-                                min = 1,
-                                max = 20,
-                                value = c(8, 13)
-                            ),
-                            numericInput("LSnonMissingPCT", #ASK ABOUT THIS
-                                label = "non missing pct", 
-                                value = 0.3,
-                                min = 0,
-                                max = 1
-                            ),
-                            selectInput("LSexolipid", 
-                                label = "exo lipid:", 
-                                choices = c(
-                                    NULL
-                                )
-                            ),
-                            radioButtons("LSspecies", 
-                                label = "species:", 
-                                choices = c(
-                                    "human" = "human",
-                                    "mouse" = "mouse",
-                                    "rat" = "rat"
+                                tabPanel("LSCustom",
+                                    h3("Parameter Selection"),
+                                    radioButtons("LSMethod", 
+                                        label = "method:",
+                                        choices = c(
+                                            "t.test" = "t.test",
+                                            "wilcox.test" = "wilcox.test"
+                                        ),
+                                        selected = "t.test",
+                                        inline = TRUE
+                                    ),
+                                    sliderInput("LSctrl", 
+                                        label = "ctrl:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(1, 7)
+                                    ),
+                                    sliderInput("LSexp", 
+                                        label = "exp:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(8, 13)
+                                    ),
+                                    numericInput("LSnonMissingPCT", #ASK ABOUT THIS
+                                        label = "non missing pct", 
+                                        value = 0.3,
+                                        min = 0,
+                                        max = 1
+                                    ),
+                                    selectInput("LSexolipid", 
+                                        label = "exo lipid:", 
+                                        choices = c(
+                                            NULL
+                                        )
+                                    ),
+                                    radioButtons("LSspecies", 
+                                        label = "species:", 
+                                        choices = c(
+                                            "human" = "human",
+                                            "mouse" = "mouse",
+                                            "rat" = "rat"
+                                        ),
+                                        selected = "rat",
+                                        inline = TRUE
+                                    ),
                                 ),
-                                selected = "rat",
-                                inline = TRUE
                             ),
                             checkboxInput("LSDownload",
                                 "Download Tables and Plots"
@@ -334,43 +346,49 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
-                            h3("Parameter Selection"),
-                            radioButtons("LCMethod", 
-                                label = "method:",
-                                choices = c(
-                                    "t.test" = "t.test",
-                                    "wilcox.test" = "wilcox.test"
+                            tabsetPanel(id = "LCparams", type = "hidden",
+                                tabPanel("LCExample"
                                 ),
-                                selected = "t.test",
-                                inline = TRUE
-                            ),
-                            sliderInput("LCctrl", 
-                                label = "ctrl:", 
-                                min = 1,
-                                max = 20,
-                                value = c(1, 7)
-                            ),
-                            sliderInput("LCexp", 
-                                label = "exp:", 
-                                min = 1,
-                                max = 20,
-                                value = c(8, 13)
-                            ),
-                            selectInput("LCexolipid", 
-                                label = "exo lipid:", 
-                                choices = c(
-                                    NULL
-                                )
-                            ),
-                            radioButtons("LCspecies", 
-                                label = "species:", 
-                                choices = c(
-                                    "human" = "human",
-                                    "mouse" = "mouse",
-                                    "rat" = "rat"
+                                tabPanel("LCCustom",
+                                    h3("Parameter Selection"),
+                                    radioButtons("LCMethod", 
+                                        label = "method:",
+                                        choices = c(
+                                            "t.test" = "t.test",
+                                            "wilcox.test" = "wilcox.test"
+                                        ),
+                                        selected = "t.test",
+                                        inline = TRUE
+                                    ),
+                                    sliderInput("LCctrl", 
+                                        label = "ctrl:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(1, 7)
+                                    ),
+                                    sliderInput("LCexp", 
+                                        label = "exp:", 
+                                        min = 1,
+                                        max = 20,
+                                        value = c(8, 13)
+                                    ),
+                                    selectInput("LCexolipid", 
+                                        label = "exo lipid:", 
+                                        choices = c(
+                                            NULL
+                                        )
+                                    ),
+                                    radioButtons("LCspecies", 
+                                        label = "species:", 
+                                        choices = c(
+                                            "human" = "human",
+                                            "mouse" = "mouse",
+                                            "rat" = "rat"
+                                        ),
+                                        selected = "rat",
+                                        inline = TRUE
+                                    ),
                                 ),
-                                selected = "rat",
-                                inline = TRUE
                             ),
                             checkboxInput("LCDownload",
                                 "Download Tables and Plots"
@@ -445,12 +463,15 @@ server <- function(input, output, session) {
 
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
+        updateTabsetPanel(inputId = "FAparams", selected = input$FAData)
     })
     observeEvent(input$LSData, {
         updateTabsetPanel(inputId = "LSFileIn", selected = input$LSData)
+        updateTabsetPanel(inputId = "LSparams", selected = input$LSData)
     })
     observeEvent(input$LCData, {
         updateTabsetPanel(inputId = "LCFileIn", selected = input$LCData)
+        updateTabsetPanel(inputId = "LCparams", selected = input$LCData)
     })
 
     observeEvent(input$FARun, {
@@ -491,12 +512,12 @@ server <- function(input, output, session) {
                 DT::datatable(format(FA_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$FAPathScoreDT <- DT::renderDataTable({
-                DT::datatable(FA_substructure_result[[1]], options = list(orderClasses = TRUE))
+                DT::datatable(format(FA_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
 
             output$FAReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(FA_substructure_result[[3]], options = list(orderClasses = TRUE))
+                DT::datatable(format(FA_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
 
@@ -532,7 +553,6 @@ server <- function(input, output, session) {
         }
 
         LS_format <- check_data_format(LS_exp_raw)
-        print(LS_format)
 
         if (length(LS_format) == 0) {
             LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method=input$LSMethod,
@@ -542,15 +562,15 @@ server <- function(input, output, session) {
                                                                         #FIGURE OUT WHAT NON_MISSING_PCT IS AND HOW TO PASS NULL
 
             output$LSInData <- DT::renderDataTable({
-                DT::datatable(LS_exp_raw, options = list(orderClasses = TRUE))
+                DT::datatable(format(LS_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LSPathScoreDT <- DT::renderDataTable({
-                DT::datatable(LS_substructure_result[[1]], options = list(orderClasses = TRUE))
+                DT::datatable(format(LS_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LSPathScorePlot <- renderPlot(plot(LS_substructure_result[[2]]))
 
             output$LSReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(LS_substructure_result[[3]], options = list(orderClasses = TRUE))
+                DT::datatable(format(LS_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LSReactionScorePlot <- renderPlot(plot(LS_substructure_result[[4]]))
 
@@ -593,15 +613,15 @@ server <- function(input, output, session) {
                                                    exo_lipid=NULL, species=input$LCspecies)
 
             output$LCInData <- DT::renderDataTable({
-                DT::datatable(LC_exp_raw, options = list(orderClasses = TRUE))
+                DT::datatable(format(LC_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LCPathScoreDT <- DT::renderDataTable({
-                DT::datatable(LC_substructure_result[[1]], options = list(orderClasses = TRUE))
+                DT::datatable(format(LC_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LCPathScorePlot <- renderPlot(plot(LC_substructure_result[[2]]))
 
             output$LCReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(LC_substructure_result[[3]], options = list(orderClasses = TRUE))
+                DT::datatable(format(LC_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
             output$LCReactionScorePlot <- renderPlot(plot(LC_substructure_result[[4]]))
 
