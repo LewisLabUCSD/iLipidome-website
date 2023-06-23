@@ -88,12 +88,9 @@ ui <- fluidPage(
                                         max = 20,
                                         value = c(8, 13)
                                     ),
-                                    textInput("FAunmappedFA", 
+                                    selectInput("FAunmappedFA", 
                                         label = "unmapped FA:", 
-                                        value = "w9-18:2;0, w3-20:4;0"
-                                    ),
-                                    selectInput("FAexolipid", 
-                                        label = "exo lipid:", 
+                                        multiple = TRUE, 
                                         choices = c(
                                             "w3-22:6;0",
                                             "FA",
@@ -194,6 +191,10 @@ ui <- fluidPage(
                                             "w3-22:6;0"
                                         )
                                     ),
+                                    textInput("FAexolipid", 
+                                        label = "exo lipid:", 
+                                        value = "w9-18:2;0, w3-20:4;0"
+                                    ),
                                     radioButtons("FAspecies", 
                                         label = "species:", 
                                         choices = c(
@@ -283,11 +284,9 @@ ui <- fluidPage(
                                         min = 0,
                                         max = 1
                                     ),
-                                    selectInput("LSexolipid", 
+                                    textInput("LSexolipid", 
                                         label = "exo lipid:", 
-                                        choices = c(
-                                            NULL
-                                        )
+                                        value = NULL
                                     ),
                                     radioButtons("LSspecies", 
                                         label = "species:", 
@@ -372,11 +371,9 @@ ui <- fluidPage(
                                         max = 20,
                                         value = c(8, 13)
                                     ),
-                                    selectInput("LCexolipid", 
+                                    textInput("LCexolipid", 
                                         label = "exo lipid:", 
-                                        choices = c(
-                                            NULL
-                                        )
+                                        value = NULL
                                     ),
                                     radioButtons("LCspecies", 
                                         label = "species:", 
@@ -503,10 +500,18 @@ server <- function(input, output, session) {
         FA_format <- check_data_format(FA_exp_raw)
 
         if (length(FA_format) == 0) {
-            FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
+            if (input$FAData == "FAExample") {
+                FA_substructure_result <- FA_substructure_analysis(exp_raw, method = 'mod.t.test',
+                                                   ctrl = 1:7, exp = 8:13,
+                                                   unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
+                                                   exo_lipid = 'w3-22:6;0', species = 'rat')
+            }
+            if (input$FAData == "FACustom") {
+                FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
                                         ctrl = input$FActrl[1]:input$FActrl[2], exp = input$FAexp[1]:input$FAexp[2],
-                                        unmapped_FA = str_trim(strsplit(input$FAunmappedFA, ",")[[1]]),
-                                        exo_lipid = input$FAexolipid, species = input$FAspecies)
+                                        unmapped_FA = input$FAunmappedFA,
+                                        exo_lipid = str_trim(strsplit(input$FAexolipid, ",")[[1]]), species = input$FAspecies)
+            }
 
             output$FAInData <- DT::renderDataTable({
                 DT::datatable(format(FA_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
@@ -537,6 +542,8 @@ server <- function(input, output, session) {
         output$LSReactionScorePlot <- NULL
         output$LSNetworkGraph <- NULL
 
+        LS_substructure_result <- NULL
+
         if (input$LSData == "LSExample") {
             LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp2.csv",
                             header = TRUE,
@@ -555,11 +562,19 @@ server <- function(input, output, session) {
         LS_format <- check_data_format(LS_exp_raw)
 
         if (length(LS_format) == 0) {
-            LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method=input$LSMethod,
-                                                                        ctrl=input$LSctrl[1]:input$LSctrl[2], exp=input$LSexp[1]:input$LSexp[2],
+            if (input$LSData == "LSExample") {
+                lipid_species_substructure_result <- lipid_species_substructure_analysis(exp_raw, method = 't.test',
+                                                                         ctrl = 1:7, exp = 8:13,
+                                                                         non_missing_pct = 0.3,
+                                                                         exo_lipid = NULL, species = 'rat')
+            }
+            if (input$LSData == "LSCustom") {
+                LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = input$LSMethod,
+                                                                        ctrl = input$LSctrl[1]:input$LSctrl[2], exp = input$LSexp[1]:input$LSexp[2],
                                                                         non_missing_pct = input$LSnonMissingPCT,
-                                                                        exo_lipid=input$LSexolipid, species=input$LSspecies) 
+                                                                        exo_lipid = input$LSexolipid, species = input$LSspecies) 
                                                                         #FIGURE OUT WHAT NON_MISSING_PCT IS AND HOW TO PASS NULL
+            }
 
             output$LSInData <- DT::renderDataTable({
                 DT::datatable(format(LS_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
@@ -588,6 +603,8 @@ server <- function(input, output, session) {
         output$LCReactionScoreDT <- NULL
         output$LCReactionScorePlot <- NULL
         output$LCNetworkGraph <- NULL
+
+        LC_substructure_result <- NULL
         
         if (input$LCData == "LCExample") {
             LC_exp_raw <- read.csv("example_data/lipid_class_substructure_analysis/exp.csv",
@@ -605,12 +622,18 @@ server <- function(input, output, session) {
         }
 
         LC_format <- check_data_format(LC_exp_raw)
-        print(LC_format)
 
         if (length(LC_format) == 0) {
-            LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method=input$LCMethod,
-                                                   ctrl=input$LCctrl[1]:input$LCctrl[2], exp=input$LCexp[1]:input$LCexp[2],
-                                                   exo_lipid=NULL, species=input$LCspecies)
+            if (input$LCData == "LCExample") {
+                lipid_class_substructure_result <- lipid_class_substructure_analysis(exp_raw, method = 't.test',
+                                                   ctrl = 1:7, exp = 8:13,
+                                                   exo_lipid = NULL, species = 'rat')
+            }
+            if (input$LCData == "LCCustom") {
+                LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = input$LCMethod,
+                                                   ctrl = input$LCctrl[1]:input$LCctrl[2], exp = input$LCexp[1]:input$LCexp[2],
+                                                   exo_lipid = NULL, species = input$LCspecies)
+            }
 
             output$LCInData <- DT::renderDataTable({
                 DT::datatable(format(LC_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
