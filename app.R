@@ -37,6 +37,7 @@ ui <- fluidPage(
     # app title
     navbarPage(
         "iLipidome",
+        # imageOutput("logo"),
         tabPanel("Tutorial",
 
         ),
@@ -52,7 +53,8 @@ ui <- fluidPage(
                                 )
                             ),
                             tabsetPanel(id = "FAFileIn", type = "hidden",
-                                tabPanel("FAExample"
+                                tabPanel("FAExample", 
+                                    downloadButton("FAdownload", "Download FA Example Dataset"),
                                 ),
                                 tabPanel("FACustom",
                                     fileInput("FAfile", "Choose file",
@@ -93,7 +95,6 @@ ui <- fluidPage(
                                         multiple = TRUE, 
                                         choices = c(
                                             "w3-22:6;0",
-                                            "FA",
                                             "16:0;0",
                                             "18:0;0",
                                             "20:0;0",
@@ -219,12 +220,14 @@ ui <- fluidPage(
                                     DT::dataTableOutput("FAInData")
                                 ),
                                 tabPanel("Path Score",
+                                    span(textOutput("FA_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("FAPathScoreDT"),
-                                    plotOutput("FAPathScorePlot"),
+                                    plotOutput("FAPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Score",
+                                    span(textOutput("FA_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("FAReactionScoreDT"),
-                                    plotOutput("FAReactionScorePlot"),
+                                    plotOutput("FAReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Network Graph",
                                     visNetworkOutput("FANetworkGraph", height = "700px")
@@ -243,7 +246,8 @@ ui <- fluidPage(
                                 )
                             ),
                             tabsetPanel(id = "LSFileIn", type = "hidden",
-                                tabPanel("LSExample"
+                                tabPanel("LSExample",
+                                    downloadButton("LSdownload", "Download LS Example Dataset"),
                                 ),
                                 tabPanel("LSCustom",
                                     fileInput("LSfile", "Choose file",
@@ -312,12 +316,14 @@ ui <- fluidPage(
                                     DT::dataTableOutput("LSInData")
                                 ),
                                 tabPanel("Path Score",
+                                    span(textOutput("LS_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("LSPathScoreDT"),
-                                    plotOutput("LSPathScorePlot"),
+                                    plotOutput("LSPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Score",
+                                    span(textOutput("LS_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("LSReactionScoreDT"),
-                                    plotOutput("LSReactionScorePlot"),
+                                    plotOutput("LSReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Network Graph",
                                     visNetworkOutput("LSNetworkGraph", height = "700px")
@@ -336,7 +342,8 @@ ui <- fluidPage(
                                 )
                             ),
                             tabsetPanel(id = "LCFileIn", type = "hidden",
-                                tabPanel("LCExample"
+                                tabPanel("LCExample",
+                                    downloadButton("LCdownload", "Download LC Example Dataset"),
                                 ),
                                 tabPanel("LCCustom",
                                     fileInput("LCfile", "Choose file",
@@ -395,19 +402,25 @@ ui <- fluidPage(
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
                                 tabPanel("Input Data",
-                                    span(textOutput("LC_error"), style="color:red"),
+                                    span(textOutput("LC_error"), style = "color:red"),
                                     DT::dataTableOutput("LCInData")
                                 ),
                                 tabPanel("Path Score",
+                                    span(textOutput("LC_nosig_path"), style = "color:red"),
                                     DT::dataTableOutput("LCPathScoreDT"),
-                                    plotOutput("LCPathScorePlot"),
+                                    plotOutput("LCPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Score",
+                                    span(textOutput("LC_nosig_reaction"), style = "color:red"),
                                     DT::dataTableOutput("LCReactionScoreDT"),
-                                    plotOutput("LCReactionScorePlot"),
+                                    plotOutput("LCReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Network Graph",
-                                    visNetworkOutput("LCNetworkGraph", height = "700px")
+                                    tags$div(
+                                        visNetworkOutput("LCNetworkGraph", height = "700px"),
+                                        style = "color:red"
+                                    )
+                                    
                                 )
                             )
                         )
@@ -438,15 +451,20 @@ ui <- fluidPage(
                 )
             )
         ),
-        tabPanel("Download Example Datasets",
-            downloadButton("downloadExampleData", "Download Example Dataset"),
-        ),
+        # tabPanel("Download Example Datasets",
+            
+        # ),
         tabPanel("FAQ",
 
         ),
         tabPanel("Contact Us",
-            p("If you would like to reach out to use, please send an email to <email address> with the
+            p("If you would like to reach out to us, please send an email to <u104001424 at cmu dot edu dot tw> with the
                 topic of the email in the subject line. "
+            ),
+            br(),
+            p("  "),
+            tags$div("If there is an issue with the website you would like to report, please create an issue ", 
+                tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
             )
         ),
     ),
@@ -457,6 +475,15 @@ server <- function(input, output, session) {
     # observeEvent(input$disconnect, {
     #     session$close()
     # })
+
+    # output$logo <- renderImage({
+    #     list(
+    #         src = file.path("www/logo.png"),
+    #         contentType = "image/png",
+    #         width = 80,
+    #         height = 30
+    #     )
+    # }, deleteFile = FALSE)
 
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
@@ -501,7 +528,7 @@ server <- function(input, output, session) {
 
         if (length(FA_format) == 0) {
             if (input$FAData == "FAExample") {
-                FA_substructure_result <- FA_substructure_analysis(exp_raw, method = 'mod.t.test',
+                FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
                                                    unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
                                                    exo_lipid = 'w3-22:6;0', species = 'rat')
@@ -516,17 +543,28 @@ server <- function(input, output, session) {
             output$FAInData <- DT::renderDataTable({
                 DT::datatable(format(FA_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
-            output$FAPathScoreDT <- DT::renderDataTable({
-                DT::datatable(format(FA_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
 
-            output$FAReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(format(FA_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
+            if (FA_substructure_result[[1]] != "NA" && FA_substructure_result[[2]] != "NA") {
+                output$FAPathScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(FA_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
+            }
+            else {
+                output$FA_nosig_path <- renderText("No Significant Pathways Found")
+            }
+            
+            if (FA_substructure_result[[3]] != "NA" && FA_substructure_result[[4]] != "NA") {
+                output$FAReactionScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(FA_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
+            }
+            else {
+                output$FA_nosig_reaction <- renderText("No Significant Reactions Found")
+            }
 
-            output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
+            output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]]) # ask what the output for the visnetwork would be if nothing is outputted
         }
         else {
             #figure out how to show FA_format error to user
@@ -563,7 +601,7 @@ server <- function(input, output, session) {
 
         if (length(LS_format) == 0) {
             if (input$LSData == "LSExample") {
-                lipid_species_substructure_result <- lipid_species_substructure_analysis(exp_raw, method = 't.test',
+                LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = 't.test',
                                                                          ctrl = 1:7, exp = 8:13,
                                                                          non_missing_pct = 0.3,
                                                                          exo_lipid = NULL, species = 'rat')
@@ -579,15 +617,26 @@ server <- function(input, output, session) {
             output$LSInData <- DT::renderDataTable({
                 DT::datatable(format(LS_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
-            output$LSPathScoreDT <- DT::renderDataTable({
-                DT::datatable(format(LS_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$LSPathScorePlot <- renderPlot(plot(LS_substructure_result[[2]]))
 
-            output$LSReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(format(LS_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$LSReactionScorePlot <- renderPlot(plot(LS_substructure_result[[4]]))
+            if (LS_substructure_result[[1]] != "NA" && LS_substructure_result[[2]] != "NA") {
+                output$LSPathScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(LS_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$LSPathScorePlot <- renderPlot(plot(LS_substructure_result[[2]]))
+            }
+            else {
+                output$LS_nosig_path <- renderText("No Significant Pathways Found")
+            }
+
+            if (LS_substructure_result[[3]] != "NA" && LS_substructure_result[[4]] != "NA") {
+                output$LSReactionScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(LS_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$LSReactionScorePlot <- renderPlot(plot(LS_substructure_result[[4]]))
+            }
+            else {
+                output$LS_nosig_reaction <- renderText("No Significant Reactions Found")
+            }
 
             output$LSNetworkGraph <- renderVisNetwork(LS_substructure_result[[5]])
         }
@@ -625,7 +674,7 @@ server <- function(input, output, session) {
 
         if (length(LC_format) == 0) {
             if (input$LCData == "LCExample") {
-                lipid_class_substructure_result <- lipid_class_substructure_analysis(exp_raw, method = 't.test',
+                LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
                                                    exo_lipid = NULL, species = 'rat')
             }
@@ -638,15 +687,26 @@ server <- function(input, output, session) {
             output$LCInData <- DT::renderDataTable({
                 DT::datatable(format(LC_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
             })
-            output$LCPathScoreDT <- DT::renderDataTable({
-                DT::datatable(format(LC_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$LCPathScorePlot <- renderPlot(plot(LC_substructure_result[[2]]))
 
-            output$LCReactionScoreDT <- DT::renderDataTable({
-                DT::datatable(format(LC_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
-            })
-            output$LCReactionScorePlot <- renderPlot(plot(LC_substructure_result[[4]]))
+            if (length(LC_substructure_result[[1]]) > 1 && length(LC_substructure_result[[2]]) > 1) {
+                output$LCPathScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(LC_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$LCPathScorePlot <- renderPlot(plot(LC_substructure_result[[2]]))
+            }
+            else {
+                output$LC_nosig_path <- renderText("No Significant Pathways Found")
+            }
+            
+            if (length(LC_substructure_result[[3]]) > 1 && length(LC_substructure_result[[4]]) > 1) {
+                output$LCReactionScoreDT <- DT::renderDataTable({
+                    DT::datatable(format(LC_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                })
+                output$LCReactionScorePlot <- renderPlot(plot(LC_substructure_result[[4]]))
+            }
+            else {
+                output$LC_nosig_reaction <- renderText("No Significant Reactions Found")
+            }
 
             output$LCNetworkGraph <- renderVisNetwork(LC_substructure_result[[5]])
         }
@@ -663,10 +723,24 @@ server <- function(input, output, session) {
         }
     )
 
-    output$downloadExampleData <- downloadHandler(
+    output$FAdownload <- downloadHandler(
         filename = "example_data/FA_substructure_analysis/exp.csv",
         content = function(fileDownload) {
             file.copy("example_data/FA_substructure_analysis/exp.csv", fileDownload)
+        }
+    )
+
+    output$LSdownload <- downloadHandler(
+        filename = "example_data/lipid_species_substructure_analysis/exp.csv",
+        content = function(fileDownload) {
+            file.copy("example_data/lipid_species_substructure_analysis/exp2.csv", fileDownload)
+        }
+    )
+
+    output$LCdownload <- downloadHandler(
+        filename = "example_data/lipid_class_substructure_analysis/exp.csv",
+        content = function(fileDownload) {
+            file.copy("example_data/lipid_class_substructure_analysis/exp.csv", fileDownload)
         }
     )
 }
