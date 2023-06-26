@@ -194,7 +194,8 @@ ui <- fluidPage(
                                     ),
                                     textInput("FAexolipid", 
                                         label = "exo lipid:", 
-                                        value = "w9-18:2;0, w3-20:4;0"
+                                        value = NULL
+                                        # "w9-18:2;0, w3-20:4;0"
                                     ),
                                     radioButtons("FAspecies", 
                                         label = "species:", 
@@ -541,32 +542,38 @@ server <- function(input, output, session) {
             }
 
             output$FAInData <- DT::renderDataTable({
-                DT::datatable(format(FA_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                FA_exp_raw %>% 
+                    DT::datatable() %>% 
+                    DT::formatRound(which(sapply(FA_exp_raw, is.numeric)), digits = 3)
             })
 
             if (FA_substructure_result[[1]] != "NA" && FA_substructure_result[[2]] != "NA") {
                 output$FAPathScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(FA_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    FA_substructure_result[[1]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(FA_substructure_result[[1]], is.numeric)), digits = 3)
                 })
                 output$FAPathScorePlot <- renderPlot(plot(FA_substructure_result[[2]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$FA_nosig_path <- renderText("No Significant Pathways Found")
             }
             
             if (FA_substructure_result[[3]] != "NA" && FA_substructure_result[[4]] != "NA") {
                 output$FAReactionScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(FA_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    FA_substructure_result[[3]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(FA_substructure_result[[3]], is.numeric)), digits = 3)
                 })
                 output$FAReactionScorePlot <- renderPlot(plot(FA_substructure_result[[4]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$FA_nosig_reaction <- renderText("No Significant Reactions Found")
             }
 
             output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]]) # ask what the output for the visnetwork would be if nothing is outputted
         }
-        else {
+        else { # display errors
             #figure out how to show FA_format error to user
             output$FA_error <- renderText(FA_format)
         }
@@ -615,32 +622,38 @@ server <- function(input, output, session) {
             }
 
             output$LSInData <- DT::renderDataTable({
-                DT::datatable(format(LS_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                LS_exp_raw %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LS_exp_raw, is.numeric)), digits = 3)
             })
 
             if (LS_substructure_result[[1]] != "NA" && LS_substructure_result[[2]] != "NA") {
                 output$LSPathScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(LS_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    LS_substructure_result[[1]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LS_substructure_result[[1]], is.numeric)), digits = 3)
                 })
                 output$LSPathScorePlot <- renderPlot(plot(LS_substructure_result[[2]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$LS_nosig_path <- renderText("No Significant Pathways Found")
             }
 
             if (LS_substructure_result[[3]] != "NA" && LS_substructure_result[[4]] != "NA") {
                 output$LSReactionScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(LS_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    LS_substructure_result[[3]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LS_substructure_result[[3]], is.numeric)), digits = 3)
                 })
                 output$LSReactionScorePlot <- renderPlot(plot(LS_substructure_result[[4]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$LS_nosig_reaction <- renderText("No Significant Reactions Found")
             }
 
             output$LSNetworkGraph <- renderVisNetwork(LS_substructure_result[[5]])
         }
-        else {
+        else { # display errors
             output$LS_error <- renderText(LS_format)
         }
     })
@@ -685,32 +698,38 @@ server <- function(input, output, session) {
             }
 
             output$LCInData <- DT::renderDataTable({
-                DT::datatable(format(LC_exp_raw, digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                LC_exp_raw %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LC_exp_raw, is.numeric)), digits = 3)
             })
 
             if (length(LC_substructure_result[[1]]) > 1 && length(LC_substructure_result[[2]]) > 1) {
                 output$LCPathScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(LC_substructure_result[[1]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    LC_substructure_result[[1]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LC_substructure_result[[1]], is.numeric)), digits = 3)
                 })
                 output$LCPathScorePlot <- renderPlot(plot(LC_substructure_result[[2]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$LC_nosig_path <- renderText("No Significant Pathways Found")
             }
             
             if (length(LC_substructure_result[[3]]) > 1 && length(LC_substructure_result[[4]]) > 1) {
                 output$LCReactionScoreDT <- DT::renderDataTable({
-                    DT::datatable(format(LC_substructure_result[[3]], digits = 1, justify = "none"), options = list(orderClasses = TRUE))
+                    LC_substructure_result[[3]] %>%
+                        DT::datatable() %>%
+                        DT::formatRound(which(sapply(LC_substructure_result[[3]], is.numeric)), digits = 3)
                 })
                 output$LCReactionScorePlot <- renderPlot(plot(LC_substructure_result[[4]]))
             }
-            else {
+            else { # output of result is "NA"
                 output$LC_nosig_reaction <- renderText("No Significant Reactions Found")
             }
 
             output$LCNetworkGraph <- renderVisNetwork(LC_substructure_result[[5]])
         }
-        else {
+        else { # display errors
             output$LC_error <- renderText(LC_format)
         }
     })
