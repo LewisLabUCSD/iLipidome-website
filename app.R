@@ -48,18 +48,18 @@ ui <- fluidPage(
                         sidebarPanel(
                             radioButtons("FAData", "Data Source",
                                 c(
-                                    "Example dataset (<dataset name>)" = "FAExample",
+                                    "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "FAExample",
                                     "Upload your own data" = "FACustom"
                                 )
                             ),
                             tabsetPanel(id = "FAFileIn", type = "hidden",
                                 tabPanel("FAExample", 
-                                    downloadButton("FAdownload", "Download FA Example Dataset"),
+                                    downloadButton("FAdownload", "Download Example"),
                                 ),
                                 tabPanel("FACustom",
                                     fileInput("FAfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                        accept = c(".csv", ".tsv")
                                     )
                                 ),
                             ),
@@ -67,31 +67,30 @@ ui <- fluidPage(
                                 tabPanel("FAExample"
                                 ),
                                 tabPanel("FACustom",
-                                    h3("Parameter Selection"),
                                     radioButtons("FAMethod", 
-                                        label = "method:",
+                                        label = "Method:",
                                         choices = c(
-                                            "t.test" = "t.test",
-                                            "wilcox.test" = "wilcox.test"
+                                            "t-test" = "t.test",
+                                            "Wilcoxon test" = "wilcox.test"
                                             # "mod.t.test" = "mod.t.test"
                                         ),
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
                                     sliderInput("FActrl", 
-                                        label = "ctrl:", 
+                                        label = "Control Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
                                     ),
                                     sliderInput("FAexp", 
-                                        label = "exp:", 
+                                        label = "Experimental Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(8, 13)
                                     ),
                                     selectInput("FAunmappedFA", 
-                                        label = "unmapped FA:", 
+                                        label = "Remove Low-expressed Fatty Acid Isomers:", 
                                         multiple = TRUE, 
                                         choices = c(
                                             "w3-22:6;0",
@@ -193,16 +192,16 @@ ui <- fluidPage(
                                         )
                                     ),
                                     textInput("FAexolipid", 
-                                        label = "exo lipid:", 
+                                        label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
                                         # "w9-18:2;0, w3-20:4;0"
                                     ),
                                     radioButtons("FAspecies", 
-                                        label = "species:", 
+                                        label = "Species:", 
                                         choices = c(
-                                            "human" = "human",
-                                            "mouse" = "mouse",
-                                            "rat" = "rat"
+                                            "Human" = "human",
+                                            "Mouse" = "mouse",
+                                            "Rat" = "rat"
                                         ),
                                         selected = "rat",
                                         inline = TRUE
@@ -212,25 +211,25 @@ ui <- fluidPage(
                             checkboxInput("FADownload",
                                 "Download Tables and Plots"
                             ),
-                            actionButton("FARun", "run code", padding = "8px")
+                            actionButton("FARun", "Run Analysis", padding = "8px")
                         ),
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Input Data",
+                                tabPanel("Lipid Expression Data",
                                     span(textOutput("FA_error"), style="color:red"),
                                     DT::dataTableOutput("FAInData")
                                 ),
-                                tabPanel("Path Score",
+                                tabPanel("Pathway Analysis",
                                     span(textOutput("FA_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("FAPathScoreDT"),
                                     plotOutput("FAPathScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Reaction Score",
+                                tabPanel("Reaction Analysis",
                                     span(textOutput("FA_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("FAReactionScoreDT"),
                                     plotOutput("FAReactionScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Network Graph",
+                                tabPanel("Lipid Network",
                                     visNetworkOutput("FANetworkGraph", height = "700px")
                                 )
                             )
@@ -242,18 +241,18 @@ ui <- fluidPage(
                         sidebarPanel(
                             radioButtons("LSData", "Data Source",
                                 c(
-                                    "Example dataset (<dataset name>)" = "LSExample",
+                                    "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LSExample",
                                     "Upload your own data" = "LSCustom"
                                 )
                             ),
                             tabsetPanel(id = "LSFileIn", type = "hidden",
                                 tabPanel("LSExample",
-                                    downloadButton("LSdownload", "Download LS Example Dataset"),
+                                    downloadButton("LSdownload", "Download Example"),
                                 ),
                                 tabPanel("LSCustom",
                                     fileInput("LSfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                        accept = c(".csv", ".tsv")
                                     )
                                 ),
                             ),
@@ -261,44 +260,44 @@ ui <- fluidPage(
                                 tabPanel("LSExample"
                                 ),
                                 tabPanel("LSCustom",
-                                    h3("Parameter Selection"),
                                     radioButtons("LSMethod", 
-                                        label = "method:",
+                                        label = "Method:",
                                         choices = c(
-                                            "t.test" = "t.test",
-                                            "wilcox.test" = "wilcox.test"
+                                            "t-test" = "t.test",
+                                            "Wilcoxon test" = "wilcox.test"
                                         ),
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
                                     sliderInput("LSctrl", 
-                                        label = "ctrl:", 
+                                        label = "Control Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
                                     ),
                                     sliderInput("LSexp", 
-                                        label = "exp:", 
+                                        label = "Experimental Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(8, 13)
                                     ),
                                     numericInput("LSnonMissingPCT", #ASK ABOUT THIS
-                                        label = "non missing pct", 
+                                        label = "Percentage of Non-missing Values to Retain a Pathway", 
                                         value = 0.3,
                                         min = 0,
-                                        max = 1
+                                        max = 1,
+                                        step = 0.1
                                     ),
                                     textInput("LSexolipid", 
-                                        label = "exo lipid:", 
+                                        label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
                                     ),
                                     radioButtons("LSspecies", 
-                                        label = "species:", 
+                                        label = "Species:", 
                                         choices = c(
-                                            "human" = "human",
-                                            "mouse" = "mouse",
-                                            "rat" = "rat"
+                                            "Human" = "human",
+                                            "Mouse" = "mouse",
+                                            "Rat" = "rat"
                                         ),
                                         selected = "rat",
                                         inline = TRUE
@@ -308,25 +307,25 @@ ui <- fluidPage(
                             checkboxInput("LSDownload",
                                 "Download Tables and Plots"
                             ),
-                            actionButton("LSRun", "run code", padding = "8px")
+                            actionButton("LSRun", "Run Analysis", padding = "8px")
                         ),
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Input Data",
+                                tabPanel("Lipid Expression Data",
                                     span(textOutput("LS_error"), style="color:red"),
                                     DT::dataTableOutput("LSInData")
                                 ),
-                                tabPanel("Path Score",
+                                tabPanel("Pathway Analysis",
                                     span(textOutput("LS_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("LSPathScoreDT"),
                                     plotOutput("LSPathScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Reaction Score",
+                                tabPanel("Reaction Analysis",
                                     span(textOutput("LS_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("LSReactionScoreDT"),
                                     plotOutput("LSReactionScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Network Graph",
+                                tabPanel("Lipid Network",
                                     visNetworkOutput("LSNetworkGraph", height = "700px")
                                 )
                             )
@@ -338,18 +337,18 @@ ui <- fluidPage(
                         sidebarPanel(
                             radioButtons("LCData", "Data Source",
                                 c(
-                                    "Example dataset (<dataset name>)" = "LCExample",
+                                    "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LCExample",
                                     "Upload your own data" = "LCCustom"
                                 )
                             ),
                             tabsetPanel(id = "LCFileIn", type = "hidden",
                                 tabPanel("LCExample",
-                                    downloadButton("LCdownload", "Download LC Example Dataset"),
+                                    downloadButton("LCdownload", "Download Example"),
                                 ),
                                 tabPanel("LCCustom",
                                     fileInput("LCfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c("text/csv", "text/comma-separated-values", ".csv")
+                                        accept = c(".csv", ".tsv")
                                     )
                                 ),
                             ),
@@ -357,38 +356,37 @@ ui <- fluidPage(
                                 tabPanel("LCExample"
                                 ),
                                 tabPanel("LCCustom",
-                                    h3("Parameter Selection"),
                                     radioButtons("LCMethod", 
-                                        label = "method:",
+                                        label = "Method:",
                                         choices = c(
-                                            "t.test" = "t.test",
-                                            "wilcox.test" = "wilcox.test"
+                                            "t-test" = "t.test",
+                                            "Wilcoxon test" = "wilcox.test"
                                         ),
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
                                     sliderInput("LCctrl", 
-                                        label = "ctrl:", 
+                                        label = "Control Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
                                     ),
                                     sliderInput("LCexp", 
-                                        label = "exp:", 
+                                        label = "Experimental Group:", 
                                         min = 1,
                                         max = 20,
                                         value = c(8, 13)
                                     ),
                                     textInput("LCexolipid", 
-                                        label = "exo lipid:", 
+                                        label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
                                     ),
                                     radioButtons("LCspecies", 
-                                        label = "species:", 
+                                        label = "Species:", 
                                         choices = c(
-                                            "human" = "human",
-                                            "mouse" = "mouse",
-                                            "rat" = "rat"
+                                            "Human" = "human",
+                                            "Mouse" = "mouse",
+                                            "Rat" = "rat"
                                         ),
                                         selected = "rat",
                                         inline = TRUE
@@ -398,30 +396,29 @@ ui <- fluidPage(
                             checkboxInput("LCDownload",
                                 "Download Tables and Plots"
                             ),
-                            actionButton("LCRun", "run code", padding = "8px")
+                            actionButton("LCRun", "Run Analysis", padding = "8px")
                         ),
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Input Data",
+                                tabPanel("Lipid Expression Data",
                                     span(textOutput("LC_error"), style = "color:red"),
                                     DT::dataTableOutput("LCInData")
                                 ),
-                                tabPanel("Path Score",
+                                tabPanel("Pathway Analysis",
                                     span(textOutput("LC_nosig_path"), style = "color:red"),
                                     DT::dataTableOutput("LCPathScoreDT"),
                                     plotOutput("LCPathScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Reaction Score",
+                                tabPanel("Reaction Analysis",
                                     span(textOutput("LC_nosig_reaction"), style = "color:red"),
                                     DT::dataTableOutput("LCReactionScoreDT"),
                                     plotOutput("LCReactionScorePlot", width = "70%", height = "600"),
                                 ),
-                                tabPanel("Network Graph",
+                                tabPanel("Lipid Network",
                                     tags$div(
                                         visNetworkOutput("LCNetworkGraph", height = "700px"),
                                         style = "color:red"
                                     )
-                                    
                                 )
                             )
                         )
@@ -509,6 +506,7 @@ server <- function(input, output, session) {
         output$FANetworkGraph <- NULL
 
         FA_substructure_result <- NULL
+        output$FA_error <- renderText("")
 
         if (input$FAData == "FAExample") {
             FA_exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
@@ -588,6 +586,7 @@ server <- function(input, output, session) {
         output$LSNetworkGraph <- NULL
 
         LS_substructure_result <- NULL
+        output$LS_error <- renderText("")
 
         if (input$LSData == "LSExample") {
             LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp2.csv",
@@ -667,6 +666,7 @@ server <- function(input, output, session) {
         output$LCNetworkGraph <- NULL
 
         LC_substructure_result <- NULL
+        output$LC_error <- renderText("")
         
         if (input$LCData == "LCExample") {
             LC_exp_raw <- read.csv("example_data/lipid_class_substructure_analysis/exp.csv",
