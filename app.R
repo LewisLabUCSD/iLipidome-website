@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyhelper)
 # library(shinydisconnect)
 
 library(tidyverse)
@@ -26,12 +27,29 @@ library(ggtext)
 # library(ggvenn)
 
 # install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
-# library(iLipidome)
+library(iLipidome)
 
 source("functions.R")
-source("required_function.R")
 
-load('required_data.RData')
+# source("required_function.R")
+# load('required_data.RData')
+
+data_info <- "<ol><li>Lipid dataset can be uploaded by users or using example datasets. Data needs to be uploaded in CSV or TSV format. The maximum file size is 30MB.
+                <li>Once the file is chosen and shown 'Upload complete' then press 'Run analysis'.</ol>"
+
+ctrl_info <- "<ol><li>Enter the column number separated by comma to assign control and experimental groups.
+                <li>Note that the first column contains the names of the lipids, so the grouping information should be counted from the second column onwards.
+                <li>For instance, in a dataset where the first column contains lipid names, columns 2 to 4 represent the control group, and columns 5 to 7 indicate the experimental group, you should fill '1,2,3' in the Control group and '4,5,6' in the Experimental group.</ol>"
+
+unmapped_info <- "<ol><li>Select the low-expressed fatty acid isomers for exclusion
+                <li>Due to the limitations of mass spectrometry, the exact double bond locations for fatty acids are often not provided in most lipidomics data. Consequently, certain fatty acids may be mapped to multiple candidates in the fatty acid network (e.g., FA 20:4 could be omega-3 or omega-6). This parameter aids in the specific removal of low-expressed fatty acid isomers, thereby enabling more precise calculations.</ol>"
+
+FA_exo_info <- "<ol><li>Select the exogenous fatty acids in the study to prevent substructure decomposition.
+                <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude the effects of exogenous treatment. </ol>"
+
+lipid_exo_info <- "<ol><li>Enter the exogenous lipids separated by comma to prevent substructure decomposition. For example: 'PC_16:0;0_22:6;0,PC_18:0;0_22:6;0'
+                    <li>The lipid names or classes must be present in the uploaded dataset.
+                    <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude the effects of exogenous treatment.</ol>"
 
 ui <- fluidPage(
     # app title
@@ -51,6 +69,12 @@ ui <- fluidPage(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "FAExample",
                                     "Upload your own data" = "FACustom"
                                 )
+                            ) %>%
+                            helper(
+                                type = "inline",
+                                title = "Data Source:",
+                                size = "l",
+                                content = data_info
                             ),
                             tabsetPanel(id = "FAFileIn", type = "hidden",
                                 tabPanel("FAExample", 
@@ -82,6 +106,11 @@ ui <- fluidPage(
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Assign Group Information:",
+                                        size = "l",
+                                        content = ctrl_info
                                     ),
                                     sliderInput("FAexp", 
                                         label = "Experimental Group:", 
@@ -190,11 +219,21 @@ ui <- fluidPage(
                                             "w3-24:6;0",
                                             "w3-22:6;0"
                                         )
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Remove low-expressed fatty acid isomers:",
+                                        size = "l",
+                                        content = unmapped_info
                                     ),
                                     textInput("FAexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
                                         # "w9-18:2;0, w3-20:4;0"
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Remove exogenous lipid effect:",
+                                        size = "l",
+                                        content = FA_exo_info
                                     ),
                                     radioButtons("FAspecies", 
                                         label = "Species:", 
@@ -244,6 +283,12 @@ ui <- fluidPage(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LSExample",
                                     "Upload your own data" = "LSCustom"
                                 )
+                            ) %>%
+                            helper(
+                                type = "inline",
+                                title = "Data Source:",
+                                size = "l",
+                                content = data_info
                             ),
                             tabsetPanel(id = "LSFileIn", type = "hidden",
                                 tabPanel("LSExample",
@@ -274,6 +319,11 @@ ui <- fluidPage(
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
+                                    )%>% helper(
+                                        type = "inline",
+                                        title = "Assign Group Information:",
+                                        size = "l",
+                                        content = ctrl_info
                                     ),
                                     sliderInput("LSexp", 
                                         label = "Experimental Group:", 
@@ -282,7 +332,7 @@ ui <- fluidPage(
                                         value = c(8, 13)
                                     ),
                                     numericInput("LSnonMissingPCT", #ASK ABOUT THIS
-                                        label = "Percentage of Non-missing Values to Retain a Pathway", 
+                                        label = "Proportion of Non-missing Values to Retain a Pathway", 
                                         value = 0.3,
                                         min = 0,
                                         max = 1,
@@ -291,6 +341,11 @@ ui <- fluidPage(
                                     textInput("LSexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Remove exogenous lipid effect:",
+                                        size = "l",
+                                        content = lipid_exo_info
                                     ),
                                     radioButtons("LSspecies", 
                                         label = "Species:", 
@@ -340,6 +395,12 @@ ui <- fluidPage(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LCExample",
                                     "Upload your own data" = "LCCustom"
                                 )
+                            ) %>%
+                            helper(
+                                type = "inline",
+                                title = "Data Source:",
+                                size = "l",
+                                content = data_info
                             ),
                             tabsetPanel(id = "LCFileIn", type = "hidden",
                                 tabPanel("LCExample",
@@ -370,6 +431,11 @@ ui <- fluidPage(
                                         min = 1,
                                         max = 20,
                                         value = c(1, 7)
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Assign Group Information:",
+                                        size = "l",
+                                        content = ctrl_info
                                     ),
                                     sliderInput("LCexp", 
                                         label = "Experimental Group:", 
@@ -380,6 +446,11 @@ ui <- fluidPage(
                                     textInput("LCexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
+                                    )%>% helper(
+                                        type = "inline",
+                                        title = "Remove exogenous lipid effect:",
+                                        size = "l",
+                                        content = lipid_exo_info
                                     ),
                                     radioButtons("LCspecies", 
                                         label = "Species:", 
@@ -482,6 +553,8 @@ server <- function(input, output, session) {
     #         height = 30
     #     )
     # }, deleteFile = FALSE)
+
+    observe_helpers()
 
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
