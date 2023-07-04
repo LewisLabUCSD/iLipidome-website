@@ -101,22 +101,18 @@ ui <- fluidPage(
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
-                                    sliderInput("FActrl", 
+                                    textInput("FActrl", 
                                         label = "Control Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(1, 7)
+                                        value = "1:7"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
                                         size = "l",
                                         content = ctrl_info
                                     ),
-                                    sliderInput("FAexp", 
-                                        label = "Experimental Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(8, 13)
+                                    textInput("FAexp", 
+                                        label = "Experimental Group:",
+                                        value = "8:13"
                                     ),
                                     selectInput("FAunmappedFA", 
                                         label = "Remove Low-expressed Fatty Acid Isomers:", 
@@ -226,8 +222,7 @@ ui <- fluidPage(
                                         content = unmapped_info
                                     ),
                                     textInput("FAexolipid", 
-                                        label = "Remove Exogenous Lipid Effect:", 
-                                        value = NULL
+                                        label = "Remove Exogenous Lipid Effect:"
                                         # "w9-18:2;0, w3-20:4;0"
                                     ) %>% helper(
                                         type = "inline",
@@ -314,22 +309,18 @@ ui <- fluidPage(
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
-                                    sliderInput("LSctrl", 
+                                    textInput("LSctrl", 
                                         label = "Control Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(1, 7)
-                                    )%>% helper(
+                                        value = "1:7"
+                                    ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
                                         size = "l",
                                         content = ctrl_info
                                     ),
-                                    sliderInput("LSexp", 
+                                    textInput("LSexp", 
                                         label = "Experimental Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(8, 13)
+                                        value = "8:13"
                                     ),
                                     numericInput("LSnonMissingPCT", #ASK ABOUT THIS
                                         label = "Proportion of Non-missing Values to Retain a Pathway", 
@@ -426,27 +417,23 @@ ui <- fluidPage(
                                         selected = "t.test",
                                         inline = TRUE
                                     ),
-                                    sliderInput("LCctrl", 
+                                    textInput("LCctrl", 
                                         label = "Control Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(1, 7)
+                                        value = "1:7"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
                                         size = "l",
                                         content = ctrl_info
                                     ),
-                                    sliderInput("LCexp", 
+                                    textInput("LCexp", 
                                         label = "Experimental Group:", 
-                                        min = 1,
-                                        max = 20,
-                                        value = c(8, 13)
+                                        value = "8:13"
                                     ),
                                     textInput("LCexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
-                                    )%>% helper(
+                                    ) %>% helper(
                                         type = "inline",
                                         title = "Remove exogenous lipid effect:",
                                         size = "l",
@@ -606,10 +593,14 @@ server <- function(input, output, session) {
                                                    exo_lipid = 'w3-22:6;0', species = 'rat')
             }
             if (input$FAData == "FACustom") {
+                if (input$FAexolipid == "") { FAexo <- NULL }
+                else { FAexo <- str_trim(strsplit(input$FAexolipid, ",")[[1]]) }
+
                 FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
-                                        ctrl = input$FActrl[1]:input$FActrl[2], exp = input$FAexp[1]:input$FAexp[2],
+                                        ctrl = unlist(lapply(str_trim(unlist(strsplit(input$FActrl, ","))), function(x) eval(parse(text = x)))),
+                                        exp = unlist(lapply(str_trim(unlist(strsplit(input$FAexp, ","))), function(x) eval(parse(text = x)))),
                                         unmapped_FA = input$FAunmappedFA,
-                                        exo_lipid = str_trim(strsplit(input$FAexolipid, ",")[[1]]), species = input$FAspecies)
+                                        exo_lipid = FAexo, species = input$FAspecies)
             }
 
             output$FAInData <- DT::renderDataTable({
@@ -686,11 +677,14 @@ server <- function(input, output, session) {
                                                                          exo_lipid = NULL, species = 'rat')
             }
             if (input$LSData == "LSCustom") {
+                if (input$LSexolipid == "") { LSexo <- NULL }
+                else { LSexo <- str_trim(strsplit(input$LSexolipid, ",")[[1]]) }
+
                 LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = input$LSMethod,
-                                                                        ctrl = input$LSctrl[1]:input$LSctrl[2], exp = input$LSexp[1]:input$LSexp[2],
+                                                                        ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LSctrl, ","))), function(x) eval(parse(text = x)))), 
+                                                                        exp = unlist(lapply(str_trim(unlist(strsplit(input$LSexp, ","))), function(x) eval(parse(text = x)))),
                                                                         non_missing_pct = input$LSnonMissingPCT,
-                                                                        exo_lipid = input$LSexolipid, species = input$LSspecies) 
-                                                                        #FIGURE OUT WHAT NON_MISSING_PCT IS AND HOW TO PASS NULL
+                                                                        exo_lipid = LSexo, species = input$LSspecies) 
             }
 
             output$LSInData <- DT::renderDataTable({
@@ -765,9 +759,13 @@ server <- function(input, output, session) {
                                                    exo_lipid = NULL, species = 'rat')
             }
             if (input$LCData == "LCCustom") {
+                if (input$LCexolipid == "") { LCexo <- NULL }
+                else { LCexo <- str_trim(strsplit(input$LCexolipid, ",")[[1]]) }
+
                 LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = input$LCMethod,
-                                                   ctrl = input$LCctrl[1]:input$LCctrl[2], exp = input$LCexp[1]:input$LCexp[2],
-                                                   exo_lipid = NULL, species = input$LCspecies)
+                                                   ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LCctrl, ","))), function(x) eval(parse(text = x)))), 
+                                                   exp = unlist(lapply(str_trim(unlist(strsplit(input$LCexp, ","))), function(x) eval(parse(text = x)))),
+                                                   exo_lipid = LCexo, species = input$LCspecies)
             }
 
             output$LCInData <- DT::renderDataTable({

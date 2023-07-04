@@ -374,7 +374,7 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 
   # Essential edges (reactions) analysis for species substructures
 
-  species_net_w_rev <- add_rev_rection(
+  species_net_w_rev <- add_rev_reaction(
     network_edge = network_edge,
     species_net = species_network
   )
