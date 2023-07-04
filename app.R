@@ -556,8 +556,13 @@ server <- function(input, output, session) {
         updateTabsetPanel(inputId = "LCparams", selected = input$LCData)
     })
 
+    # function to pass to data processing functions to update progress bar
+    update_progress <- function(progress = NULL, detail = NULL) {
+        progress$inc(amount = 1/6, detail = detail)
+    }
+
     observeEvent(input$FARun, {
-        # reset plots to default state
+        # reset plots and text indicators to default state
         output$FAInData <- NULL
         output$FAPathScoreDT <- NULL
         output$FAPathScorePlot <- NULL
@@ -567,6 +572,12 @@ server <- function(input, output, session) {
 
         FA_substructure_result <- NULL
         output$FA_error <- renderText("")
+
+        # Create a Progress object
+        FA_progress <- shiny::Progress$new()
+        FA_progress$set(message = "Processing...", value = 0)
+        # Close the progress when this reactive exits (even if there's an error)
+        on.exit(FA_progress$close())
 
         if (input$FAData == "FAExample") {
             FA_exp_raw <- read.csv("example_data/FA_substructure_analysis/exp.csv",
@@ -582,6 +593,7 @@ server <- function(input, output, session) {
                             quote = "\""
                         )
         }
+        update_progress(progress = FA_progress, detail = "File uploaded, data processing started")
 
         FA_format <- check_data_format(FA_exp_raw)
 
@@ -590,7 +602,8 @@ server <- function(input, output, session) {
                 FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
                                                    unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
-                                                   exo_lipid = 'w3-22:6;0', species = 'rat')
+                                                   exo_lipid = 'w3-22:6;0', species = 'rat', 
+                                                   progress = FA_progress, update_progress = update_progress)
             }
             if (input$FAData == "FACustom") {
                 if (input$FAexolipid == "") { FAexo <- NULL }
@@ -600,8 +613,11 @@ server <- function(input, output, session) {
                                         ctrl = unlist(lapply(str_trim(unlist(strsplit(input$FActrl, ","))), function(x) eval(parse(text = x)))),
                                         exp = unlist(lapply(str_trim(unlist(strsplit(input$FAexp, ","))), function(x) eval(parse(text = x)))),
                                         unmapped_FA = input$FAunmappedFA,
-                                        exo_lipid = FAexo, species = input$FAspecies)
+                                        exo_lipid = FAexo, species = input$FAspecies,
+                                        progress = FA_progress, update_progress = update_progress)
             }
+
+            update_progress(progress = FA_progress, detail = "Displaying tables and plots...")
 
             output$FAInData <- DT::renderDataTable({
                 FA_exp_raw %>% 
@@ -652,6 +668,12 @@ server <- function(input, output, session) {
         LS_substructure_result <- NULL
         output$LS_error <- renderText("")
 
+        # Create a Progress object
+        LS_progress <- shiny::Progress$new()
+        LS_progress$set(message = "Processing...", value = 0)
+        # Close the progress when this reactive exits (even if there's an error)
+        on.exit(LS_progress$close())
+
         if (input$LSData == "LSExample") {
             LS_exp_raw <- read.csv("example_data/lipid_species_substructure_analysis/exp2.csv",
                             header = TRUE,
@@ -666,6 +688,7 @@ server <- function(input, output, session) {
                             quote = "\""
                         )
         }
+        update_progress(progress = LS_progress, detail = "File uploaded, data processing started")
 
         LS_format <- check_data_format(LS_exp_raw)
 
@@ -674,7 +697,8 @@ server <- function(input, output, session) {
                 LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = 't.test',
                                                                          ctrl = 1:7, exp = 8:13,
                                                                          non_missing_pct = 0.3,
-                                                                         exo_lipid = NULL, species = 'rat')
+                                                                         exo_lipid = NULL, species = 'rat',
+                                                                         progress = LS_progress, update_progress = update_progress)
             }
             if (input$LSData == "LSCustom") {
                 if (input$LSexolipid == "") { LSexo <- NULL }
@@ -684,8 +708,11 @@ server <- function(input, output, session) {
                                                                         ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LSctrl, ","))), function(x) eval(parse(text = x)))), 
                                                                         exp = unlist(lapply(str_trim(unlist(strsplit(input$LSexp, ","))), function(x) eval(parse(text = x)))),
                                                                         non_missing_pct = input$LSnonMissingPCT,
-                                                                        exo_lipid = LSexo, species = input$LSspecies) 
+                                                                        exo_lipid = LSexo, species = input$LSspecies,
+                                                                        progress = LS_progress, update_progress = update_progress) 
             }
+
+            update_progress(progress = LS_progress, detail = "Displaying tables and plots...")
 
             output$LSInData <- DT::renderDataTable({
                 LS_exp_raw %>%
@@ -734,6 +761,12 @@ server <- function(input, output, session) {
 
         LC_substructure_result <- NULL
         output$LC_error <- renderText("")
+
+        # Create a Progress object
+        LC_progress <- shiny::Progress$new()
+        LC_progress$set(message = "Processing...", value = 0)
+        # Close the progress when this reactive exits (even if there's an error)
+        on.exit(LC_progress$close())
         
         if (input$LCData == "LCExample") {
             LC_exp_raw <- read.csv("example_data/lipid_class_substructure_analysis/exp.csv",
@@ -750,13 +783,16 @@ server <- function(input, output, session) {
                         )
         }
 
+        update_progress(progress = LC_progress, detail = "File uploaded, data processing started")
+
         LC_format <- check_data_format(LC_exp_raw)
 
         if (length(LC_format) == 0) {
             if (input$LCData == "LCExample") {
                 LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
-                                                   exo_lipid = NULL, species = 'rat')
+                                                   exo_lipid = NULL, species = 'rat',
+                                                   progress = LC_progress, update_progress = update_progress)
             }
             if (input$LCData == "LCCustom") {
                 if (input$LCexolipid == "") { LCexo <- NULL }
@@ -765,8 +801,11 @@ server <- function(input, output, session) {
                 LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = input$LCMethod,
                                                    ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LCctrl, ","))), function(x) eval(parse(text = x)))), 
                                                    exp = unlist(lapply(str_trim(unlist(strsplit(input$LCexp, ","))), function(x) eval(parse(text = x)))),
-                                                   exo_lipid = LCexo, species = input$LCspecies)
+                                                   exo_lipid = LCexo, species = input$LCspecies,
+                                                   progress = LC_progress, update_progress = update_progress)
             }
+
+            update_progress(progress = LC_progress, detail = "Displaying tables and plots...")
 
             output$LCInData <- DT::renderDataTable({
                 LC_exp_raw %>%

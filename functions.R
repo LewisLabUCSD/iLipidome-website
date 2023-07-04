@@ -8,10 +8,12 @@ load("required_data.RData")
 ## unmapped_FA: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## update_progress: progress bar update function
 
 FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
                                      unmapped_FA = c("w9-18:2;0", "w3-20:4;0"),
-                                     exo_lipid = "w3-22:6;0", species = "rat") {
+                                     exo_lipid = "w3-22:6;0", species = "rat",
+                                     progress = NULL, update_progress = NULL) {
   exp_data <- build_char_table(exp_raw, network_node = network_node)[[1]]
 
   char_data <- build_char_table(exp_raw, network_node = network_node)[[2]]
@@ -67,6 +69,10 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   )
 
   print("Substructure transformation complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Substructure transformation complete.")
+  }
+  
   # Essential pathway analysis for FA substructures
 
   set.seed(1)
@@ -133,9 +139,10 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     path_score_FA_sel <- NA
   }
 
-
-
   print("Pathway analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Pathway analysis complete.")
+  }
 
   # Essential edges (reactions) analysis for FA substructures
 
@@ -209,6 +216,9 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   }
 
   print("Reaction analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Reaction analysis complete.")
+  }
 
   # FA biosynthetic network construction
   FA_network_data <- draw_network(
@@ -228,6 +238,9 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     )
 
   print("Network analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Network analysis complete.")
+  }
 
   return(list(
     path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
@@ -242,10 +255,12 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 ## exp: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## update_progress: progress bar update function
 
 lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
                                                 non_missing_pct = 0.3,
-                                                exo_lipid = NULL, species = "rat") {
+                                                exo_lipid = NULL, species = "rat",
+                                                progress = NULL, update_progress = NULL) {
   exp_data <- build_char_table(exp_raw, network_node = network_node)[[1]]
 
   char_data <- build_char_table(exp_raw, network_node = network_node)[[2]]
@@ -295,6 +310,9 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   )
 
   print("Substructure transformation complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Substructure transformation complete.")
+  }
 
   # Species biosynthetic network data transformation
 
@@ -370,6 +388,9 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 
 
   print("Pathway analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Pathway analysis complete.")
+  }
 
 
   # Essential edges (reactions) analysis for species substructures
@@ -450,6 +471,9 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       )
   }
   print("Reaction analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Reaction analysis complete.")
+  }
 
 
   # Lipid species biosynthetic network construction
@@ -466,6 +490,9 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 
   network <- visNetwork(species_network_data[[1]], species_network_data[[2]])
   print("Network analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Network analysis complete.")
+  }
 
   return(list(
     path_score_sel, path_data_fig, reaction_score_sel,
@@ -480,9 +507,11 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 ## exp: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## update_progress: progress bar update function
 
 lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
-                                              exo_lipid = NULL, species = "rat") {
+                                              exo_lipid = NULL, species = "rat", 
+                                              progress = NULL, update_progress = NULL) {
   exp_data <- build_char_table(exp_raw, network_node = network_node)[[1]]
 
   char_data <- build_char_table(exp_raw, network_node = network_node)[[2]]
@@ -529,6 +558,9 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   )
 
   print("Substructure transformation complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Substructure transformation complete.")
+  }
 
   # Class biosynthetic network data transformation
 
@@ -605,6 +637,9 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 
 
   print("Pathway analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Pathway analysis complete.")
+  }
 
 
   # Essential edges (reactions) analysis for class substructures
@@ -679,6 +714,9 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       )
   }
   print("Reaction analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Reaction analysis complete.")
+  }
 
 
   # Lipid class biosynthetic network construction
@@ -694,6 +732,9 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 
   network <- visNetwork(class_network_data[[1]], class_network_data[[2]])
   print("Network analysis complete.")
+  if (is.function(update_progress)) {
+    update_progress(progress = progress, detail = "Network analysis complete.")
+  }
 
   return(list(
     path_score_sel, path_data_fig, reaction_score_sel,
