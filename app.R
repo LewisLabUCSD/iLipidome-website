@@ -26,7 +26,7 @@ library(ggtext)
 # library(DT)
 # library(ggvenn)
 
-# install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
+install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
 library(iLipidome)
 
 source("functions.R")
@@ -50,6 +50,9 @@ FA_exo_info <- "<ol><li>Select the exogenous fatty acids in the study to prevent
 lipid_exo_info <- "<ol><li>Enter the exogenous lipids separated by comma to prevent substructure decomposition. For example: 'PC_16:0;0_22:6;0,PC_18:0;0_22:6;0'
                     <li>The lipid names or classes must be present in the uploaded dataset.
                     <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude the effects of exogenous treatment.</ol>"
+
+pct_info <- "<ol><li>Enter a value between 0 and 1 to set the threshold for the percentage of non-missing values in a biosynthetic pathway. Increasing this value will result in fewer biosynthetic pathways being retained. This parameter enables users to regulate the substructure decomposition process, reducing artifacts that may arise from excessive decomposition.
+                <li>Usually, values between 0.3 and 0.7 are commonly used for this parameter.</ol>"
 
 ui <- fluidPage(
     # app title
@@ -322,13 +325,18 @@ ui <- fluidPage(
                                         label = "Experimental Group:", 
                                         value = "8:13"
                                     ),
-                                    numericInput("LSnonMissingPCT", #ASK ABOUT THIS
+                                    numericInput("LSnonMissingPCT",
                                         label = "Proportion of Non-missing Values to Retain a Pathway", 
                                         value = 0.3,
                                         min = 0,
                                         max = 1,
                                         step = 0.1
-                                    ),
+                                    ) %>% helper(
+                                        type = "inline",
+                                        title = "Percentage of non-missing values to retain a pathway:",
+                                        size = "l",
+                                        content = pct_info
+                                    ), 
                                     textInput("LSexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
                                         value = NULL
