@@ -70,8 +70,10 @@ ui <- fluidPage(
         tabPanel("Lipid Substructure Analysis",
             tabsetPanel(
                 tabPanel("Fatty Acid Analysis",
-                    sidebarLayout(
-                        sidebarPanel(
+                    fluidRow(br(),),
+                    fluidRow(
+                        column(2),
+                        column(4,
                             radioButtons("FAData", "Data Source",
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "FAExample",
@@ -95,6 +97,13 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
+                            
+                            checkboxInput("FADownload",
+                                "Download Tables and Plots"
+                            ),
+                            actionButton("FARun", "Run Analysis", padding = "8px")
+                        ),
+                        column(4, 
                             tabsetPanel(id = "FAparams", type = "hidden",
                                 tabPanel("FAExample"
                                 ),
@@ -250,40 +259,42 @@ ui <- fluidPage(
                                     ),
                                 ),
                             ),
-                            checkboxInput("FADownload",
-                                "Download Tables and Plots"
-                            ),
-                            actionButton("FARun", "Run Analysis", padding = "8px")
-                        ),
-                        mainPanel(
+                        ), 
+                        column(2),
+                    ),
+                    fluidRow(br(),),
+                    fluidRow(
+                        column(2),
+                        column(8,
                             tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Lipid Expression Data",
-                                    # span(textOutput("FA_error"), style="color:red"),
-                                    verbatimTextOutput("FA_error"),
-                                    DT::dataTableOutput("FAInData")
-                                ),
-                                tabPanel("Pathway Analysis",
-                                    h4("Significant pathways in Fatty Acid Network"),
-                                    p(sig_path_info),
-                                    span(textOutput("FA_nosig_path"), style="color:red"),
-                                    DT::dataTableOutput("FAPathScoreDT"),
-                                    plotOutput("FAPathScorePlot", width = "70%", height = "600"),
-                                ),
-                                tabPanel("Reaction Analysis",
-                                    h4("Significant reactions in Fatty Acid Network"),
-                                    p(sig_reaction_info),
-                                    span(textOutput("FA_nosig_reaction"), style="color:red"),
-                                    DT::dataTableOutput("FAReactionScoreDT"),
-                                    plotOutput("FAReactionScorePlot", width = "70%", height = "600"),
-                                ),
-                                tabPanel("Lipid Network",
-                                    h4("Fatty Acid Network"),
-                                    p(FALC_network_info),
-                                    visNetworkOutput("FANetworkGraph", height = "700px")
+                                    tabPanel("Lipid Expression Data",
+                                        # span(textOutput("FA_error"), style="color:red"),
+                                        verbatimTextOutput("FA_error"),
+                                        DT::dataTableOutput("FAInData")
+                                    ),
+                                    tabPanel("Pathway Analysis",
+                                        h4("Significant pathways in Fatty Acid Network"),
+                                        p(sig_path_info),
+                                        span(textOutput("FA_nosig_path"), style="color:red"),
+                                        DT::dataTableOutput("FAPathScoreDT"),
+                                        plotOutput("FAPathScorePlot", width = "70%", height = "600"),
+                                    ),
+                                    tabPanel("Reaction Analysis",
+                                        h4("Significant reactions in Fatty Acid Network"),
+                                        p(sig_reaction_info),
+                                        span(textOutput("FA_nosig_reaction"), style="color:red"),
+                                        DT::dataTableOutput("FAReactionScoreDT"),
+                                        plotOutput("FAReactionScorePlot", width = "70%", height = "600"),
+                                    ),
+                                    tabPanel("Lipid Network",
+                                        h4("Fatty Acid Network"),
+                                        p(FALC_network_info),
+                                        visNetworkOutput("FANetworkGraph", height = "700px")
+                                    )
                                 )
-                            )
-                        )
-                    )
+                        ),
+                        column(2),
+                    ),
                 ),
                 tabPanel("Lipid Species Analysis",
                     sidebarLayout(
