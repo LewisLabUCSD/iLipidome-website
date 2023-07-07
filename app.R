@@ -54,6 +54,14 @@ lipid_exo_info <- "<ol><li>Enter the exogenous lipids separated by comma to prev
 pct_info <- "<ol><li>Enter a value between 0 and 1 to set the threshold for the percentage of non-missing values in a biosynthetic pathway. Increasing this value will result in fewer biosynthetic pathways being retained. This parameter enables users to regulate the substructure decomposition process, reducing artifacts that may arise from excessive decomposition.
                 <li>Usually, values between 0.3 and 0.7 are commonly used for this parameter.</ol>"
 
+sig_path_info <- "The figure illustrates the top 5 significant representative pathways within the network, with red and blue indicating increase and decrease, respectively. These pathways are represented by starting and ending lipids. A comprehensive summary of all significant pathways can be found in the accompanying table, providing detailed information."
+
+sig_reaction_info <- "The figure illustrates the top 5 significant reactions within the network, with red and blue indicating increase and decrease, respectively. These reactions are represented by substrate and product lipids. Red and blue text indicate the fold change of lipids. A comprehensive summary of all significant reactions can be found in the accompanying table, providing detailed information."
+
+FALC_network_info <- "Top 5 significantly increased/decreased representative pathways and reactions are labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
+
+LS_network_info <- "The network consists of all the significant pathways included in the top 5 increased and decreased representative pathways. Top 5 significantly increased/decreased representative pathways and reactions are also labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
+
 ui <- fluidPage(
     # app title
     navbarPage(
@@ -250,20 +258,27 @@ ui <- fluidPage(
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
                                 tabPanel("Lipid Expression Data",
-                                    span(textOutput("FA_error"), style="color:red"),
+                                    # span(textOutput("FA_error"), style="color:red"),
+                                    verbatimTextOutput("FA_error"),
                                     DT::dataTableOutput("FAInData")
                                 ),
                                 tabPanel("Pathway Analysis",
+                                    h4("Significant pathways in Fatty Acid Network"),
+                                    p(sig_path_info),
                                     span(textOutput("FA_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("FAPathScoreDT"),
                                     plotOutput("FAPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Analysis",
+                                    h4("Significant reactions in Fatty Acid Network"),
+                                    p(sig_reaction_info),
                                     span(textOutput("FA_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("FAReactionScoreDT"),
                                     plotOutput("FAReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Lipid Network",
+                                    h4("Fatty Acid Network"),
+                                    p(FALC_network_info),
                                     visNetworkOutput("FANetworkGraph", height = "700px")
                                 )
                             )
@@ -363,20 +378,26 @@ ui <- fluidPage(
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
                                 tabPanel("Lipid Expression Data",
-                                    span(textOutput("LS_error"), style="color:red"),
+                                    verbatimTextOutput("LS_error"),
                                     DT::dataTableOutput("LSInData")
                                 ),
                                 tabPanel("Pathway Analysis",
+                                    h4("Significant pathways in Lipid Species Network"),
+                                    p(sig_path_info),
                                     span(textOutput("LS_nosig_path"), style="color:red"),
                                     DT::dataTableOutput("LSPathScoreDT"),
                                     plotOutput("LSPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Analysis",
+                                    h4("Significant reactions in Lipid Species Network"),
+                                    p(sig_reaction_info),
                                     span(textOutput("LS_nosig_reaction"), style="color:red"),
                                     DT::dataTableOutput("LSReactionScoreDT"),
                                     plotOutput("LSReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Lipid Network",
+                                    h4("Lipid Species Network"),
+                                    p(LS_network_info),
                                     visNetworkOutput("LSNetworkGraph", height = "700px")
                                 )
                             )
@@ -464,24 +485,27 @@ ui <- fluidPage(
                         mainPanel(
                             tabsetPanel( # tabPanels for visualizations
                                 tabPanel("Lipid Expression Data",
-                                    span(textOutput("LC_error"), style = "color:red"),
+                                    verbatimTextOutput("LC_error"),
                                     DT::dataTableOutput("LCInData")
                                 ),
                                 tabPanel("Pathway Analysis",
+                                    h4("Significant pathways in Lipid Class Network"),
+                                    p(sig_path_info),
                                     span(textOutput("LC_nosig_path"), style = "color:red"),
                                     DT::dataTableOutput("LCPathScoreDT"),
                                     plotOutput("LCPathScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Reaction Analysis",
+                                    h4("Significant reactions in Lipid Class Network"),
+                                    p(sig_reaction_info),
                                     span(textOutput("LC_nosig_reaction"), style = "color:red"),
                                     DT::dataTableOutput("LCReactionScoreDT"),
                                     plotOutput("LCReactionScorePlot", width = "70%", height = "600"),
                                 ),
                                 tabPanel("Lipid Network",
-                                    tags$div(
-                                        visNetworkOutput("LCNetworkGraph", height = "700px"),
-                                        style = "color:red"
-                                    )
+                                    h4("Lipid Class Network"),
+                                    p(FALC_network_info),
+                                    visNetworkOutput("LCNetworkGraph", height = "700px")
                                 )
                             )
                         )
@@ -670,14 +694,21 @@ ui <- fluidPage(
 
         ),
         tabPanel("Contact Us",
-            p("If you would like to reach out to us, please send an email to <u104001424 at cmu dot edu dot tw> with the
-                topic of the email in the subject line. "
-            ),
-            br(),
-            p("  "),
-            tags$div("If there is an issue with the website you would like to report, please create an issue ", 
-                tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
+            fluidRow(
+                column(2),
+                column(8,
+                    p("If you would like to reach out to us, please send an email to <waxlos987 at gmail dot com> and/or <austin dot chiang at gmail dot com> with 'iLipidome'
+                    followed by the topic of the email in the subject line. "
+                    ),
+                    br(),
+                    p("  "),
+                    tags$div("If there is an issue with the website you would like to report, please create an issue ", 
+                        tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
+                    )
+                ),
+                column(2)
             )
+            
         ),
     ),
     # disconnectMessage()
@@ -810,7 +841,9 @@ server <- function(input, output, session) {
         }
         else { # display errors
             #figure out how to show FA_format error to user
-            output$FA_error <- renderText(FA_format)
+            output$FA_error <- renderText({
+                paste(unlist(strsplit(FA_format, split = "!")), sep = "\n")
+            })
         }
     })
     observeEvent(input$LSRun, {
@@ -904,7 +937,9 @@ server <- function(input, output, session) {
             output$LSNetworkGraph <- renderVisNetwork(LS_substructure_result[[5]])
         }
         else { # display errors
-            output$LS_error <- renderText(LS_format)
+            output$LS_error <- renderText({
+                paste(unlist(strsplit(LS_format, split = "!")), sep = "\n")
+            })
         }
     })
     observeEvent(input$LCRun, {
@@ -997,7 +1032,9 @@ server <- function(input, output, session) {
             output$LCNetworkGraph <- renderVisNetwork(LC_substructure_result[[5]])
         }
         else { # display errors
-            output$LC_error <- renderText(LC_format)
+            output$LC_error <- renderText({
+                paste(unlist(strsplit(LC_format, split = "!")), sep = "\n")
+            })
         }
     })
 
