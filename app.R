@@ -95,7 +95,8 @@ ui <- fluidPage(
                                 tabPanel("FACustom",
                                     fileInput("FAfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c(".csv", ".tsv")
+                                        accept = c(".csv", ".tsv"), 
+                                        width = "100%"
                                     )
                                 ),
                             ),
@@ -121,7 +122,8 @@ ui <- fluidPage(
                                     ),
                                     textInput("FActrl", 
                                         label = "Control Group:", 
-                                        value = "1:7"
+                                        value = "1:7", 
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
@@ -130,7 +132,8 @@ ui <- fluidPage(
                                     ),
                                     textInput("FAexp", 
                                         label = "Experimental Group:",
-                                        value = "8:13"
+                                        value = "8:13", 
+                                        width = "100%"
                                     ),
                                     selectInput("FAunmappedFA", 
                                         label = "Remove Low-expressed Fatty Acid Isomers:", 
@@ -232,7 +235,8 @@ ui <- fluidPage(
                                             "w3-28:6;0",
                                             "w3-24:6;0",
                                             "w3-22:6;0"
-                                        )
+                                        ), 
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Remove low-expressed fatty acid isomers:",
@@ -240,8 +244,9 @@ ui <- fluidPage(
                                         content = unmapped_info
                                     ),
                                     textInput("FAexolipid", 
-                                        label = "Remove Exogenous Lipid Effect:"
-                                        # "w9-18:2;0, w3-20:4;0"
+                                        label = "Remove Exogenous Lipid Effect:",
+                                        # "w9-18:2;0, w3-20:4;0", 
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Remove exogenous lipid effect:",
@@ -256,7 +261,8 @@ ui <- fluidPage(
                                             "Rat" = "rat"
                                         ),
                                         selected = "rat",
-                                        inline = TRUE
+                                        inline = TRUE, 
+                                        width = "100%"
                                     ),
                                 ),
                             ),
@@ -322,13 +328,14 @@ ui <- fluidPage(
                                 tabPanel("LSCustom",
                                     fileInput("LSfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c(".csv", ".tsv")
+                                        accept = c(".csv", ".tsv"), 
+                                        width = "100%"
                                     )
                                 ),
                             ),
-                            checkboxInput("LSDownload",
-                                "Download Tables and Plots"
-                            ),
+                            br(),
+                            uiOutput("LSresDownload"),
+                            br(),
                             actionButton("LSRun", "Run Analysis", padding = "8px")
                         ),
                         column(6,
@@ -343,11 +350,13 @@ ui <- fluidPage(
                                             "Wilcoxon test" = "wilcox.test"
                                         ),
                                         selected = "t.test",
-                                        inline = TRUE
+                                        inline = TRUE,
+                                        width = "100%"
                                     ),
                                     textInput("LSctrl", 
                                         label = "Control Group:", 
-                                        value = "1:7"
+                                        value = "1:7",
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
@@ -356,14 +365,16 @@ ui <- fluidPage(
                                     ),
                                     textInput("LSexp", 
                                         label = "Experimental Group:", 
-                                        value = "8:13"
+                                        value = "8:13",
+                                        width = "100%"
                                     ),
                                     numericInput("LSnonMissingPCT",
                                         label = "Proportion of Non-missing Values to Retain a Pathway", 
                                         value = 0.3,
                                         min = 0,
                                         max = 1,
-                                        step = 0.1
+                                        step = 0.1,
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Percentage of non-missing values to retain a pathway:",
@@ -372,7 +383,8 @@ ui <- fluidPage(
                                     ), 
                                     textInput("LSexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
-                                        value = NULL
+                                        value = NULL,
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Remove exogenous lipid effect:",
@@ -387,7 +399,8 @@ ui <- fluidPage(
                                             "Rat" = "rat"
                                         ),
                                         selected = "rat",
-                                        inline = TRUE
+                                        inline = TRUE,
+                                        width = "100%"
                                     ),
                                 ),
                             ),
@@ -452,13 +465,14 @@ ui <- fluidPage(
                                 tabPanel("LCCustom",
                                     fileInput("LCfile", "Choose file",
                                         multiple = FALSE,
-                                        accept = c(".csv", ".tsv")
+                                        accept = c(".csv", ".tsv"),
+                                        width = "100%"
                                     )
                                 ),
                             ),
-                            checkboxInput("LCDownload",
-                                "Download Tables and Plots"
-                            ),
+                            br(),
+                            uiOutput("LCresDownload"),
+                            br(),
                             actionButton("LCRun", "Run Analysis", padding = "8px")
                         ),
                         column(6, 
@@ -473,11 +487,13 @@ ui <- fluidPage(
                                             "Wilcoxon test" = "wilcox.test"
                                         ),
                                         selected = "t.test",
-                                        inline = TRUE
+                                        inline = TRUE,
+                                        width = "100%"
                                     ),
                                     textInput("LCctrl", 
                                         label = "Control Group:", 
-                                        value = "1:7"
+                                        value = "1:7",
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Assign Group Information:",
@@ -486,11 +502,13 @@ ui <- fluidPage(
                                     ),
                                     textInput("LCexp", 
                                         label = "Experimental Group:", 
-                                        value = "8:13"
+                                        value = "8:13",
+                                        width = "100%"
                                     ),
                                     textInput("LCexolipid", 
                                         label = "Remove Exogenous Lipid Effect:", 
-                                        value = NULL
+                                        value = NULL,
+                                        width = "100%"
                                     ) %>% helper(
                                         type = "inline",
                                         title = "Remove exogenous lipid effect:",
@@ -505,7 +523,8 @@ ui <- fluidPage(
                                             "Rat" = "rat"
                                         ),
                                         selected = "rat",
-                                        inline = TRUE
+                                        inline = TRUE,
+                                        width = "100%"
                                     ),
                                 ),
                             ),
@@ -797,7 +816,7 @@ server <- function(input, output, session) {
         output$FAReactionScorePlot <- NULL
         output$FANetworkGraph <- NULL
 
-        FA_substructure_result <- NULL
+        FA_substructure_result <<- NULL
         output$FA_error <- renderText("")
 
         # Create a Progress object
@@ -814,11 +833,19 @@ server <- function(input, output, session) {
                         )
         }
         if (input$FAData == "FACustom") {
+            if (is.null(input$FAfile$datapath)) {
+                showModal(modalDialog(
+                    title = "Please Upload a file",
+                    "Please upload a dataset in the 'Choose file' section"
+                ))
+                return()
+            }
+            
             FA_exp_raw <- read.csv(input$FAfile$datapath,
-                            header = TRUE,
-                            sep = ",",
-                            quote = "\""
-                        )
+                        header = TRUE,
+                        sep = ",",
+                        quote = "\""
+                    )
         }
         update_progress(progress = FA_progress, detail = "File uploaded, data processing started")
 
@@ -826,7 +853,7 @@ server <- function(input, output, session) {
 
         if (length(FA_format) == 0) {
             if (input$FAData == "FAExample") {
-                FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = 't.test',
+                FA_substructure_result <<- FA_substructure_analysis(FA_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
                                                    unmapped_FA = c('w9-18:2;0','w3-20:4;0'),
                                                    exo_lipid = 'w3-22:6;0', species = 'rat', 
@@ -836,7 +863,7 @@ server <- function(input, output, session) {
                 if (input$FAexolipid == "") { FAexo <- NULL }
                 else { FAexo <- str_trim(strsplit(input$FAexolipid, ",")[[1]]) }
 
-                FA_substructure_result <- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
+                FA_substructure_result <<- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
                                         ctrl = unlist(lapply(str_trim(unlist(strsplit(input$FActrl, ","))), function(x) eval(parse(text = x)))),
                                         exp = unlist(lapply(str_trim(unlist(strsplit(input$FAexp, ","))), function(x) eval(parse(text = x)))),
                                         unmapped_FA = input$FAunmappedFA,
@@ -906,7 +933,7 @@ server <- function(input, output, session) {
         output$LSReactionScorePlot <- NULL
         output$LSNetworkGraph <- NULL
 
-        LS_substructure_result <- NULL
+        LS_substructure_result <<- NULL
         output$LS_error <- renderText("")
 
         # Create a Progress object
@@ -923,6 +950,14 @@ server <- function(input, output, session) {
                         )
         }
         if (input$LSData == "LSCustom") {
+            if (is.null(input$LSfile$datapath)) {
+                showModal(modalDialog(
+                    title = "Please Upload a file",
+                    "Please upload a dataset in the 'Choose file' section"
+                ))
+                return()
+            }
+
             LS_exp_raw <- read.csv(input$LSfile$datapath,
                             header = TRUE,
                             sep = ",",
@@ -935,7 +970,7 @@ server <- function(input, output, session) {
 
         if (length(LS_format) == 0) {
             if (input$LSData == "LSExample") {
-                LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = 't.test',
+                LS_substructure_result <<- lipid_species_substructure_analysis(LS_exp_raw, method = 't.test',
                                                                          ctrl = 1:7, exp = 8:13,
                                                                          non_missing_pct = 0.3,
                                                                          exo_lipid = NULL, species = 'rat',
@@ -945,7 +980,7 @@ server <- function(input, output, session) {
                 if (input$LSexolipid == "") { LSexo <- NULL }
                 else { LSexo <- str_trim(strsplit(input$LSexolipid, ",")[[1]]) }
 
-                LS_substructure_result <- lipid_species_substructure_analysis(LS_exp_raw, method = input$LSMethod,
+                LS_substructure_result <<- lipid_species_substructure_analysis(LS_exp_raw, method = input$LSMethod,
                                                                         ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LSctrl, ","))), function(x) eval(parse(text = x)))), 
                                                                         exp = unlist(lapply(str_trim(unlist(strsplit(input$LSexp, ","))), function(x) eval(parse(text = x)))),
                                                                         non_missing_pct = input$LSnonMissingPCT,
@@ -992,6 +1027,12 @@ server <- function(input, output, session) {
                     DT::datatable() %>%
                     DT::formatRound(which(sapply(LS_substructure_result[[6]], is.numeric)), digits = 3)
             })
+
+            output$LSresDownload <- renderUI(expr = if (!is.null(LS_substructure_result)) {
+                downloadButton("LSresBTN", "Download Tables and Plots")
+            } else {
+                NULL
+            })
         }
         else { # display errors
             output$LS_error <- renderText({
@@ -1008,7 +1049,7 @@ server <- function(input, output, session) {
         output$LCReactionScorePlot <- NULL
         output$LCNetworkGraph <- NULL
 
-        LC_substructure_result <- NULL
+        LC_substructure_result <<- NULL
         output$LC_error <- renderText("")
 
         # Create a Progress object
@@ -1025,6 +1066,13 @@ server <- function(input, output, session) {
                         )
         }
         if (input$LCData == "LCCustom") {
+            if (is.null(input$LCfile$datapath)) {
+                showModal(modalDialog(
+                    title = "Please Upload a file",
+                    "Please upload a dataset in the 'Choose file' section"
+                ))
+                return()
+            }
             LC_exp_raw <- read.csv(input$LCfile$datapath,
                             header = TRUE,
                             sep = ",",
@@ -1038,7 +1086,7 @@ server <- function(input, output, session) {
 
         if (length(LC_format) == 0) {
             if (input$LCData == "LCExample") {
-                LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = 't.test',
+                LC_substructure_result <<- lipid_class_substructure_analysis(LC_exp_raw, method = 't.test',
                                                    ctrl = 1:7, exp = 8:13,
                                                    exo_lipid = NULL, species = 'rat',
                                                    progress = LC_progress, update_progress = update_progress)
@@ -1047,7 +1095,7 @@ server <- function(input, output, session) {
                 if (input$LCexolipid == "") { LCexo <- NULL }
                 else { LCexo <- str_trim(strsplit(input$LCexolipid, ",")[[1]]) }
 
-                LC_substructure_result <- lipid_class_substructure_analysis(LC_exp_raw, method = input$LCMethod,
+                LC_substructure_result <<- lipid_class_substructure_analysis(LC_exp_raw, method = input$LCMethod,
                                                    ctrl = unlist(lapply(str_trim(unlist(strsplit(input$LCctrl, ","))), function(x) eval(parse(text = x)))), 
                                                    exp = unlist(lapply(str_trim(unlist(strsplit(input$LCexp, ","))), function(x) eval(parse(text = x)))),
                                                    exo_lipid = LCexo, species = input$LCspecies,
@@ -1093,6 +1141,12 @@ server <- function(input, output, session) {
                     DT::datatable() %>%
                     DT::formatRound(which(sapply(LC_substructure_result[[6]], is.numeric)), digits = 3)
             })
+
+            output$LCresDownload <- renderUI(expr = if (!is.null(LC_substructure_result)) {
+                downloadButton("LCresBTN", "Download Tables and Plots")
+            } else {
+                NULL
+            })
         }
         else { # display errors
             output$LC_error <- renderText({
@@ -1116,7 +1170,7 @@ server <- function(input, output, session) {
             temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
             dir.create(temp_directory)
 
-            png(file.path(temp_directory, "FA_plots.png"))
+            pdf(file.path(temp_directory, "FA_plots.pdf"))
             print(FA_substructure_result[[2]])
             print(FA_substructure_result[[4]])
             # FA_substructure_result[[5]] %>% View
@@ -1125,6 +1179,56 @@ server <- function(input, output, session) {
             write.csv(FA_substructure_result[[1]], file.path(temp_directory, "FA_sig_pathways.csv"))
             write.csv(FA_substructure_result[[3]], file.path(temp_directory, "FA_sig_reactions.csv"))
             write.csv(FA_substructure_result[[6]], file.path(temp_directory, "FA_diff_exp.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
+    )
+
+    output$LSresBTN <- downloadHandler(
+        filename = function () { paste("LS_results", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            pdf(file.path(temp_directory, "LS_plots.pdf"))
+            print(FA_substructure_result[[2]])
+            print(FA_substructure_result[[4]])
+            # FA_substructure_result[[5]] %>% View
+            dev.off()
+
+            write.csv(FA_substructure_result[[1]], file.path(temp_directory, "LS_sig_pathways.csv"))
+            write.csv(FA_substructure_result[[3]], file.path(temp_directory, "LS_sig_reactions.csv"))
+            write.csv(FA_substructure_result[[6]], file.path(temp_directory, "LS_diff_exp.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
+    )
+
+    output$LCresBTN <- downloadHandler(
+        filename = function () { paste("LC_results", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            pdf(file.path(temp_directory, "LC_plots.pdf"))
+            print(FA_substructure_result[[2]])
+            print(FA_substructure_result[[4]])
+            # FA_substructure_result[[5]]
+            dev.off()
+
+            write.csv(FA_substructure_result[[1]], file.path(temp_directory, "LC_sig_pathways.csv"))
+            write.csv(FA_substructure_result[[3]], file.path(temp_directory, "LC_sig_reactions.csv"))
+            write.csv(FA_substructure_result[[6]], file.path(temp_directory, "LC_diff_exp.csv"))
 
             zip::zip(
                 zipfile = file,
