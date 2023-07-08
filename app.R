@@ -79,7 +79,8 @@ ui <- fluidPage(
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "FAExample",
                                     "Upload your own data" = "FACustom"
-                                )
+                                ), 
+                                width = "100%"
                             ) %>%
                             helper(
                                 type = "inline",
@@ -305,7 +306,8 @@ ui <- fluidPage(
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LSExample",
                                     "Upload your own data" = "LSCustom"
-                                )
+                                ), 
+                                width = "100%"
                             ) %>%
                             helper(
                                 type = "inline",
@@ -434,7 +436,8 @@ ui <- fluidPage(
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LCExample",
                                     "Upload your own data" = "LCCustom"
-                                )
+                                ), 
+                                width = "100%"
                             ) %>%
                             helper(
                                 type = "inline",
@@ -729,7 +732,7 @@ ui <- fluidPage(
             fluidRow(
                 column(2),
                 column(8,
-                    p("If you would like to reach out to us, please send an email to <waxlos987 at gmail dot com> and/or <austin dot chiang at gmail dot com> with 'iLipidome'
+                    p("If you would like to reach out to us, please send an email to <waxlos987@gmail.com> and/or <austin.chiang@gmail.com> with 'iLipidome'
                     followed by the topic of the email in the subject line. "
                     ),
                     br(),
