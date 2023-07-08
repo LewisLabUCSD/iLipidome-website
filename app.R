@@ -62,6 +62,8 @@ FALC_network_info <- "Top 5 significantly increased/decreased representative pat
 
 LS_network_info <- "The network consists of all the significant pathways included in the top 5 increased and decreased representative pathways. Top 5 significantly increased/decreased representative pathways and reactions are also labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
 
+substructure_info <- "In this section, we present the results of the differential expression analysis conducted on the substructure-transformed data."
+
 ui <- fluidPage(
     # app title
     navbarPage(
@@ -72,8 +74,7 @@ ui <- fluidPage(
                 tabPanel("Fatty Acid Analysis",
                     fluidRow(br(),),
                     fluidRow(
-                        column(2),
-                        column(4,
+                        column(6,
                             radioButtons("FAData", "Data Source",
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "FAExample",
@@ -97,13 +98,12 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
-                            
-                            checkboxInput("FADownload",
-                                "Download Tables and Plots"
-                            ),
+                            br(),
+                            uiOutput("FAresDownload"),
+                            br(),
                             actionButton("FARun", "Run Analysis", padding = "8px")
                         ),
-                        column(4, 
+                        column(6, 
                             tabsetPanel(id = "FAparams", type = "hidden",
                                 tabPanel("FAExample"
                                 ),
@@ -260,45 +260,47 @@ ui <- fluidPage(
                                 ),
                             ),
                         ), 
-                        column(2),
                     ),
                     fluidRow(br(),),
                     fluidRow(
-                        column(2),
-                        column(8,
-                            tabsetPanel( # tabPanels for visualizations
-                                    tabPanel("Lipid Expression Data",
-                                        # span(textOutput("FA_error"), style="color:red"),
-                                        verbatimTextOutput("FA_error"),
-                                        DT::dataTableOutput("FAInData")
-                                    ),
-                                    tabPanel("Pathway Analysis",
-                                        h4("Significant pathways in Fatty Acid Network"),
-                                        p(sig_path_info),
-                                        span(textOutput("FA_nosig_path"), style="color:red"),
-                                        DT::dataTableOutput("FAPathScoreDT"),
-                                        plotOutput("FAPathScorePlot", width = "100%", height = "600"),
-                                    ),
-                                    tabPanel("Reaction Analysis",
-                                        h4("Significant reactions in Fatty Acid Network"),
-                                        p(sig_reaction_info),
-                                        span(textOutput("FA_nosig_reaction"), style="color:red"),
-                                        DT::dataTableOutput("FAReactionScoreDT"),
-                                        plotOutput("FAReactionScorePlot", width = "100%", height = "600"),
-                                    ),
-                                    tabPanel("Lipid Network",
-                                        h4("Fatty Acid Network"),
-                                        p(FALC_network_info),
-                                        visNetworkOutput("FANetworkGraph", height = "700px")
-                                    )
-                                )
-                        ),
-                        column(2),
+                        tabsetPanel( # tabPanels for visualizations
+                            tabPanel("Lipid Expression Data",
+                                # span(textOutput("FA_error"), style="color:red"),
+                                verbatimTextOutput("FA_error"),
+                                DT::dataTableOutput("FAInData")
+                            ),
+                            tabPanel("Substructure Analysis",
+                                h4("Differential Expression Analysis"),
+                                p(substructure_info),
+                                DT::dataTableOutput("FAsubres")
+                            ),
+                            tabPanel("Pathway Analysis",
+                                h4("Significant pathways in Fatty Acid Network"),
+                                p(sig_path_info),
+                                span(textOutput("FA_nosig_path"), style="color:red"),
+                                DT::dataTableOutput("FAPathScoreDT"),
+                                plotOutput("FAPathScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Reaction Analysis",
+                                h4("Significant reactions in Fatty Acid Network"),
+                                p(sig_reaction_info),
+                                span(textOutput("FA_nosig_reaction"), style="color:red"),
+                                DT::dataTableOutput("FAReactionScoreDT"),
+                                plotOutput("FAReactionScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Lipid Network",
+                                h4("Fatty Acid Network"),
+                                p(FALC_network_info),
+                                visNetworkOutput("FANetworkGraph", height = "700px")
+                            )
+                        )
                     ),
+                    fluidRow(br(),)
                 ),
                 tabPanel("Lipid Species Analysis",
-                    sidebarLayout(
-                        sidebarPanel(
+                    fluidRow(br(), ),
+                    fluidRow(
+                        column(6,
                             radioButtons("LSData", "Data Source",
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LSExample",
@@ -322,6 +324,12 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
+                            checkboxInput("LSDownload",
+                                "Download Tables and Plots"
+                            ),
+                            actionButton("LSRun", "Run Analysis", padding = "8px")
+                        ),
+                        column(6,
                             tabsetPanel(id = "LSparams", type = "hidden",
                                 tabPanel("LSExample"
                                 ),
@@ -381,43 +389,47 @@ ui <- fluidPage(
                                     ),
                                 ),
                             ),
-                            checkboxInput("LSDownload",
-                                "Download Tables and Plots"
-                            ),
-                            actionButton("LSRun", "Run Analysis", padding = "8px")
                         ),
-                        mainPanel(
-                            tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Lipid Expression Data",
-                                    verbatimTextOutput("LS_error"),
-                                    DT::dataTableOutput("LSInData")
-                                ),
-                                tabPanel("Pathway Analysis",
-                                    h4("Significant pathways in Lipid Species Network"),
-                                    p(sig_path_info),
-                                    span(textOutput("LS_nosig_path"), style="color:red"),
-                                    DT::dataTableOutput("LSPathScoreDT"),
-                                    plotOutput("LSPathScorePlot", width = "100%", height = "600"),
-                                ),
-                                tabPanel("Reaction Analysis",
-                                    h4("Significant reactions in Lipid Species Network"),
-                                    p(sig_reaction_info),
-                                    span(textOutput("LS_nosig_reaction"), style="color:red"),
-                                    DT::dataTableOutput("LSReactionScoreDT"),
-                                    plotOutput("LSReactionScorePlot", width = "100%", height = "600"),
-                                ),
-                                tabPanel("Lipid Network",
-                                    h4("Lipid Species Network"),
-                                    p(LS_network_info),
-                                    visNetworkOutput("LSNetworkGraph", height = "700px")
-                                )
+                    ),
+                    fluidRow(br(),),
+                    fluidRow(
+                        tabsetPanel( # tabPanels for visualizations
+                            tabPanel("Lipid Expression Data",
+                                verbatimTextOutput("LS_error"),
+                                DT::dataTableOutput("LSInData")
+                            ),
+                            tabPanel("Substructure Analysis",
+                                h4("Differential Expression Analysis"),
+                                p(substructure_info),                                
+                                DT::dataTableOutput("LSsubres")
+                            ),
+                            tabPanel("Pathway Analysis",
+                                h4("Significant pathways in Lipid Species Network"),
+                                p(sig_path_info),
+                                span(textOutput("LS_nosig_path"), style="color:red"),
+                                DT::dataTableOutput("LSPathScoreDT"),
+                                plotOutput("LSPathScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Reaction Analysis",
+                                h4("Significant reactions in Lipid Species Network"),
+                                p(sig_reaction_info),
+                                span(textOutput("LS_nosig_reaction"), style="color:red"),
+                                DT::dataTableOutput("LSReactionScoreDT"),
+                                plotOutput("LSReactionScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Lipid Network",
+                                h4("Lipid Species Network"),
+                                p(LS_network_info),
+                                visNetworkOutput("LSNetworkGraph", height = "700px")
                             )
                         )
-                    )
+                    ),
+                    fluidRow(br(),),
                 ),
                 tabPanel("Lipid Class Analysis",
-                    sidebarLayout(
-                        sidebarPanel(
+                    fluidRow(br(),),
+                    fluidRow(
+                        column(6,
                             radioButtons("LCData", "Data Source",
                                 c(
                                     "Example dataset (Levental KR, et al. Nat Commun. 2020)" = "LCExample",
@@ -441,6 +453,12 @@ ui <- fluidPage(
                                     )
                                 ),
                             ),
+                            checkboxInput("LCDownload",
+                                "Download Tables and Plots"
+                            ),
+                            actionButton("LCRun", "Run Analysis", padding = "8px")
+                        ),
+                        column(6, 
                             tabsetPanel(id = "LCparams", type = "hidden",
                                 tabPanel("LCExample"
                                 ),
@@ -488,39 +506,42 @@ ui <- fluidPage(
                                     ),
                                 ),
                             ),
-                            checkboxInput("LCDownload",
-                                "Download Tables and Plots"
+                        )
+                    ),
+                    fluidRow(br(),),
+                    fluidRow(
+                        tabsetPanel( # tabPanels for visualizations
+                            tabPanel("Lipid Expression Data",
+                                verbatimTextOutput("LC_error"),
+                                DT::dataTableOutput("LCInData")
                             ),
-                            actionButton("LCRun", "Run Analysis", padding = "8px")
-                        ),
-                        mainPanel(
-                            tabsetPanel( # tabPanels for visualizations
-                                tabPanel("Lipid Expression Data",
-                                    verbatimTextOutput("LC_error"),
-                                    DT::dataTableOutput("LCInData")
-                                ),
-                                tabPanel("Pathway Analysis",
-                                    h4("Significant pathways in Lipid Class Network"),
-                                    p(sig_path_info),
-                                    span(textOutput("LC_nosig_path"), style = "color:red"),
-                                    DT::dataTableOutput("LCPathScoreDT"),
-                                    plotOutput("LCPathScorePlot", width = "100%", height = "600"),
-                                ),
-                                tabPanel("Reaction Analysis",
-                                    h4("Significant reactions in Lipid Class Network"),
-                                    p(sig_reaction_info),
-                                    span(textOutput("LC_nosig_reaction"), style = "color:red"),
-                                    DT::dataTableOutput("LCReactionScoreDT"),
-                                    plotOutput("LCReactionScorePlot", width = "100%", height = "600"),
-                                ),
-                                tabPanel("Lipid Network",
-                                    h4("Lipid Class Network"),
-                                    p(FALC_network_info),
-                                    visNetworkOutput("LCNetworkGraph", height = "700px")
-                                )
+                            tabPanel("Substructure Analysis",
+                                h4("Differential Expression Analysis"),
+                                p(substructure_info),
+                                DT::dataTableOutput("LCsubres")
+                            ),
+                            tabPanel("Pathway Analysis",
+                                h4("Significant pathways in Lipid Class Network"),
+                                p(sig_path_info),
+                                span(textOutput("LC_nosig_path"), style = "color:red"),
+                                DT::dataTableOutput("LCPathScoreDT"),
+                                plotOutput("LCPathScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Reaction Analysis",
+                                h4("Significant reactions in Lipid Class Network"),
+                                p(sig_reaction_info),
+                                span(textOutput("LC_nosig_reaction"), style = "color:red"),
+                                DT::dataTableOutput("LCReactionScoreDT"),
+                                plotOutput("LCReactionScorePlot", width = "100%", height = "600"),
+                            ),
+                            tabPanel("Lipid Network",
+                                h4("Lipid Class Network"),
+                                p(FALC_network_info),
+                                visNetworkOutput("LCNetworkGraph", height = "700px")
                             )
                         )
-                    )
+                    ),
+                    fluidRow(br(),),
                 )
             ),
         ),
@@ -742,6 +763,10 @@ server <- function(input, output, session) {
     # initialize shinyhelper package for help modals
     observe_helpers()
 
+    FA_substructure_result <- NULL
+    LS_substructure_result <- NULL
+    LC_substructure_result <- NULL
+
     observeEvent(input$FAData, {
         updateTabsetPanel(inputId = "FAFileIn", selected = input$FAData)
         updateTabsetPanel(inputId = "FAparams", selected = input$FAData)
@@ -849,6 +874,18 @@ server <- function(input, output, session) {
             }
 
             output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]]) # ask what the output for the visnetwork would be if nothing is outputted
+
+            output$FAsubres <- DT::renderDataTable({
+                FA_substructure_result[[6]] %>%
+                    DT::datatable() %>%
+                    DT::formatRound(which(sapply(FA_substructure_result[[6]], is.numeric)), digits = 3)
+            })
+
+            output$FAresDownload <- renderUI(expr = if (!is.null(FA_substructure_result)) {
+                downloadButton("FAresBTN", "Download Tables and Plots")
+            } else {
+                NULL
+            })
         }
         else { # display errors
             #figure out how to show FA_format error to user
@@ -946,6 +983,12 @@ server <- function(input, output, session) {
             }
 
             output$LSNetworkGraph <- renderVisNetwork(LS_substructure_result[[5]])
+
+            output$LSsubres <- DT::renderDataTable({
+                LS_substructure_result[[6]] %>%
+                    DT::datatable() %>%
+                    DT::formatRound(which(sapply(LS_substructure_result[[6]], is.numeric)), digits = 3)
+            })
         }
         else { # display errors
             output$LS_error <- renderText({
@@ -1041,6 +1084,12 @@ server <- function(input, output, session) {
             }
 
             output$LCNetworkGraph <- renderVisNetwork(LC_substructure_result[[5]])
+
+            output$LCsubres <- DT::renderDataTable({
+                LC_substructure_result[[6]] %>%
+                    DT::datatable() %>%
+                    DT::formatRound(which(sapply(LC_substructure_result[[6]], is.numeric)), digits = 3)
+            })
         }
         else { # display errors
             output$LC_error <- renderText({
@@ -1049,12 +1098,38 @@ server <- function(input, output, session) {
         }
     })
 
-    output$downloadPaper <- downloadHandler(
-        #change file paths
-        filename = "iLipidome-paper.pdf",
-        content = function(fileDownload) {
-            file.copy("iLipidome-paper.pdf", fileDownload)
-        }
+    # output$downloadPaper <- downloadHandler(
+    #     #change file paths
+    #     filename = "iLipidome-paper.pdf",
+    #     content = function(fileDownload) {
+    #         file.copy("iLipidome-paper.pdf", fileDownload)
+    #     }
+    # )
+
+    # HANDLE RESULT PLOT TABLE DOWNLOAD HERE
+    output$FAresBTN <- downloadHandler(
+        filename = function () { paste("FA_results", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            png(file.path(temp_directory, "FA_plots.png"))
+            print(FA_substructure_result[[2]])
+            print(FA_substructure_result[[4]])
+            # FA_substructure_result[[5]] %>% View
+            dev.off()
+
+            write.csv(FA_substructure_result[[1]], file.path(temp_directory, "FA_sig_pathways.csv"))
+            write.csv(FA_substructure_result[[3]], file.path(temp_directory, "FA_sig_reactions.csv"))
+            write.csv(FA_substructure_result[[6]], file.path(temp_directory, "FA_diff_exp.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
     )
 
     output$FAdownload <- downloadHandler(

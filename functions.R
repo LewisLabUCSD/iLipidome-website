@@ -242,10 +242,22 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  return(list(
-    path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
-    reaction_data_fig, network
-  ))
+  sub_result <- FA_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
+                  "log2FC","p_value", "adj_p_value", "sig")] %>% 
+    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
+                   'P-value','Adjusted p-value', 'Significance')) %>% 
+    arrange(`Adjusted p-value`,desc(Substructure))
+  
+  network_node <- FA_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
+  network_edge <- FA_network_data[[2]] %>% 
+    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
+    left_join(reaction_score_FA[,c("edge_name", "p_value",
+                                   'perturbation_score' ,'Mode', 'genes')] %>% 
+                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
+              by='Reaction')  %>% arrange(desc(label))
+
+  return(list(path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
+              reaction_data_fig, network, sub_result, network_node, network_edge))
 }
 
 #-------------------Analysis for unprocessed data-------------------
@@ -494,10 +506,22 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  return(list(
-    path_score_sel, path_data_fig, reaction_score_sel,
-    reaction_data_fig, network
-  ))
+  sub_result <- species_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
+                                   "log2FC","p_value", "adj_p_value", "sig")] %>% 
+    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
+                   'P-value','Adjusted p-value', 'Significance')) %>% 
+    arrange(`Adjusted p-value`,desc(Substructure))
+  
+  network_node <- species_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
+  network_edge <- species_network_data[[2]] %>% 
+    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
+    left_join(reaction_score[,c("edge_name", "p_value",
+                                'perturbation_score' ,'Mode', 'genes')] %>% 
+                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
+              by='Reaction') %>% arrange(desc(label))
+  
+  return(list(path_score_sel, path_data_fig, reaction_score_sel,
+              reaction_data_fig,network, sub_result, network_node, network_edge))
 }
 
 #-------------------Analysis for unprocessed data-------------------
@@ -736,10 +760,22 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  return(list(
-    path_score_sel, path_data_fig, reaction_score_sel,
-    reaction_data_fig, network
-  ))
+  sub_result <- class_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
+                                "log2FC","p_value", "adj_p_value", "sig")] %>% 
+    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
+                   'P-value','Adjusted p-value', 'Significance')) %>% 
+    arrange(`Adjusted p-value`,desc(Substructure))
+  
+  network_node <- class_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
+  network_edge <- class_network_data[[2]] %>% 
+    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
+    left_join(reaction_score[,c("edge_name", "p_value",
+                                   'perturbation_score' ,'Mode', 'genes')] %>% 
+                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
+              by='Reaction')  %>% arrange(desc(label))
+  
+  return(list(path_score_sel, path_data_fig, reaction_score_sel,
+              reaction_data_fig,network, sub_result, network_node, network_edge))
 }
 
 #-------------------Check for correct data format-------------------
