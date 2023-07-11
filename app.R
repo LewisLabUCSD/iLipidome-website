@@ -1,70 +1,73 @@
 library(shiny)
 library(shinyhelper)
-# library(shinydisconnect)
 
 library(tidyverse)
 library(dplyr)
 library(igraph)
 library(visNetwork)
-# library(xlsx)
 library(data.table)
-# library(MKmisc)
 library(gplots)
 library(gtools)
-# library(ggsci)
-# library(ggpubr)
-# library(gridExtra)
-# library(ggrepel)
 library(ggtext)
 
-# library(ComplexHeatmap)
-# library(fpc)
-# library(cowplot)
-
-# library(ggplot2)
-
-# library(DT)
-# library(ggvenn)
-
-# install.packages('iLipidome_0.1.0.tar.gz', repos=NULL, type='source')
 library(iLipidome)
 
 source("functions.R")
-
-# source("required_function.R")
-# load('required_data.RData')
 
 data_info <- "<ol><li>Lipid dataset can be uploaded by users or using example datasets. Data needs to be uploaded in CSV or TSV format. The maximum file size is 30MB.
                 <li>Once the file is chosen and shown 'Upload complete' then press 'Run analysis'.</ol>"
 
 ctrl_info <- "<ol><li>Enter individual column numbers (1, 2, 3), or ranges of numbers (1:5), separated by commas to assign control and experimental groups.
                 <li>Note that the first column contains the names of the lipids, so the grouping information should be counted from the second column onwards.
-                <li>For instance, in a dataset where the first column contains lipid names, columns 2 to 4 represent the control group, and columns 5 to 7 indicate the experimental group, you should fill '1,2,3' in the Control group and '4,5,6' in the Experimental group.</ol>"
+                <li>For instance, in a dataset where the first column contains lipid names, columns 2 to 4 represent the control group, and columns 5 to 7 
+                indicate the experimental group, you should fill '1,2,3' in the Control group and '4,5,6' in the Experimental group.</ol>"
 
 unmapped_info <- "<ol><li>Select the low-expressed fatty acid isomers for exclusion
-                <li>Due to the limitations of mass spectrometry, the exact double bond locations for fatty acids are often not provided in most lipidomics data. Consequently, certain fatty acids may be mapped to multiple candidates in the fatty acid network (e.g., FA 20:4 could be omega-3 or omega-6). This parameter aids in the specific removal of low-expressed fatty acid isomers, thereby enabling more precise calculations.</ol>"
+                <li>Due to the limitations of mass spectrometry, the exact double bond locations for fatty acids are often not provided in most lipidomics data. 
+                Consequently, certain fatty acids may be mapped to multiple candidates in the fatty acid network (e.g., FA 20:4 could be omega-3 or omega-6). This 
+                parameter aids in the specific removal of low-expressed fatty acid isomers, thereby enabling more precise calculations.</ol>"
 
 FA_exo_info <- "<ol><li>Select the exogenous fatty acids in the study to prevent substructure decomposition.
-                <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude the effects of exogenous treatment. </ol>"
+                <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude 
+                the effects of exogenous treatment. </ol>"
 
 lipid_exo_info <- "<ol><li>Enter the exogenous lipids separated by comma to prevent substructure decomposition. For example: 'PC_16:0;0_22:6;0,PC_18:0;0_22:6;0'
                     <li>The lipid names or classes must be present in the uploaded dataset.
-                    <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude the effects of exogenous treatment.</ol>"
+                    <li>If an exogenous treatment is present in the study, it can significantly impact the calculation results. This parameter allows users to exclude 
+                    the effects of exogenous treatment.</ol>"
 
-pct_info <- "<ol><li>Enter a value between 0 and 1 to set the threshold for the percentage of non-missing values in a biosynthetic pathway. Increasing this value will result in fewer biosynthetic pathways being retained. This parameter enables users to regulate the substructure decomposition process, reducing artifacts that may arise from excessive decomposition.
+pct_info <- "<ol><li>Enter a value between 0 and 1 to set the threshold for the percentage of non-missing values in a biosynthetic pathway. Increasing this value will 
+                result in fewer biosynthetic pathways being retained. This parameter enables users to regulate the substructure decomposition process, reducing artifacts 
+                that may arise from excessive decomposition.
                 <li>Usually, values between 0.3 and 0.7 are commonly used for this parameter.</ol>"
 
-sig_path_info <- "The figure illustrates the top 5 significant representative pathways within the network, with red and blue indicating increase and decrease, respectively. These pathways are represented by starting and ending lipids. A comprehensive summary of all significant pathways can be found in the accompanying table, providing detailed information."
+sig_path_info <- "The figure illustrates the top 5 significant representative pathways within the network, with red and blue indicating increase and decrease, respectively. 
+                These pathways are represented by starting and ending lipids. A comprehensive summary of all significant pathways can be found in the accompanying table, 
+                providing detailed information."
 
-sig_reaction_info <- "The figure illustrates the top 5 significant reactions within the network, with red and blue indicating increase and decrease, respectively. These reactions are represented by substrate and product lipids. Red and blue text indicate the fold change of lipids. A comprehensive summary of all significant reactions can be found in the accompanying table, providing detailed information."
+sig_reaction_info <- "The figure illustrates the top 5 significant reactions within the network, with red and blue indicating increase and decrease, respectively. These 
+                    reactions are represented by substrate and product lipids. Red and blue text indicate the fold change of lipids. A comprehensive summary of all significant reactions can 
+                    be found in the accompanying table, providing detailed information."
 
-FALC_network_info <- "Top 5 significantly increased/decreased representative pathways and reactions are labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
+FALC_network_info <- "Top 5 significantly increased/decreased representative pathways and reactions are labeled in the network, with red and blue indicating increase and 
+                    decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, 
+                    nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, 
+                    its border will be highlighted in purple."
 
-LS_network_info <- "The network consists of all the significant pathways included in the top 5 increased and decreased representative pathways. Top 5 significantly increased/decreased representative pathways and reactions are also labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
+LS_network_info <- "The network consists of all the significant pathways included in the top 5 increased and decreased representative pathways. Top 5 significantly increased/decreased 
+                    representative pathways and reactions are also labeled in the network, with red and blue indicating increase and decrease, respectively. The line width and color 
+                    depth indicate the importance of pathways, while the text size represents the importance of reactions. Furthermore, nodes in the figure are filled based on the 
+                    log2 (fold change), and their sizes indicate -log10 (adjusted p-value). If a node exhibits significant changes in abundance, its border will be highlighted in purple."
 
 substructure_info <- "In this section, we present the results of the differential expression analysis conducted on the substructure-transformed data."
 
-FA_choices <- c("w3-22:6;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", "16:0;0", "w7-16:1;0", "16:0;0", "18:0;0", "w9-18:1;0", "w9-18:1;0", "w9-20:1;0", "w9-18:2;0", "w9-20:2;0", "w9-20:1;0", "w9-22:1;0", "w9-24:1;0", "w6-18:2;0", "w6-18:3;0", "w6-20:3;0", "w6-22:4;0", "w6-20:4;0", "w6-24:4;0", "w6-26:4;0", "w6-24:4;0", "w6-24:5;0", "w6-24:5;0", "w6-22:5;0", "w6-22:4;0", "w6-26:5;0", "w3-18:3;0", "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-24:5;0", "w3-24:6;0", "w3-24:6;0", "w3-26:6;0", "w3-22:6;0", "w3-22:5;0", "4:0;0", "6:0;0", "8:0;0", "10:0;0", "12:0;0", "14:0;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", "28:0;0", "w7-16:1;0", "w7-18:1;0", "w10-16:1;0", "w9-18:1;0", "w9-18:2;0", "w9-20:1;0", "w9-20:2;0", "w9-20:2;0", "w9-20:3;0", "w9-22:1;0", "w9-24:1;0", "w9-26:1;0", "w6-18:3;0", "w6-20:3;0", "w6-20:4;0", "w6-22:4;0", "w6-24:4;0", "w6-26:4;0", "w6-28:4;0", "w6-24:5;0", "w6-22:5;0", "w6-26:5;0", "w6-24:5;0", "w6-22:5;0", "w6-28:5;0", "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-28:5;0", "w3-24:6;0", "w3-22:6;0", "w3-26:6;0", "w3-28:6;0", "w3-24:6;0", "w3-22:6;0")
+FA_choices <- c("w3-22:6;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", "16:0;0", "w7-16:1;0", "16:0;0", "18:0;0", "w9-18:1;0", "w9-18:1;0", "w9-20:1;0", "w9-18:2;0", 
+                "w9-20:2;0", "w9-20:1;0", "w9-22:1;0", "w9-24:1;0", "w6-18:2;0", "w6-18:3;0", "w6-20:3;0", "w6-22:4;0", "w6-20:4;0", "w6-24:4;0", "w6-26:4;0", "w6-24:4;0", "w6-24:5;0", 
+                "w6-24:5;0", "w6-22:5;0", "w6-22:4;0", "w6-26:5;0", "w3-18:3;0", "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-24:5;0", "w3-24:6;0", 
+                "w3-24:6;0", "w3-26:6;0", "w3-22:6;0", "w3-22:5;0", "4:0;0", "6:0;0", "8:0;0", "10:0;0", "12:0;0", "14:0;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", 
+                "28:0;0", "w7-16:1;0", "w7-18:1;0", "w10-16:1;0", "w9-18:1;0", "w9-18:2;0", "w9-20:1;0", "w9-20:2;0", "w9-20:2;0", "w9-20:3;0", "w9-22:1;0", "w9-24:1;0", "w9-26:1;0", 
+                "w6-18:3;0", "w6-20:3;0", "w6-20:4;0", "w6-22:4;0", "w6-24:4;0", "w6-26:4;0", "w6-28:4;0", "w6-24:5;0", "w6-22:5;0", "w6-26:5;0", "w6-24:5;0", "w6-22:5;0", "w6-28:5;0", 
+                "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-28:5;0", "w3-24:6;0", "w3-22:6;0", "w3-26:6;0", "w3-28:6;0", "w3-24:6;0", "w3-22:6;0")
 
 ui <- fluidPage(
     # app title
@@ -117,7 +120,6 @@ ui <- fluidPage(
                                         choices = c(
                                             "t-test" = "t.test",
                                             "Wilcoxon test" = "wilcox.test"
-                                            # "mod.t.test" = "mod.t.test"
                                         ),
                                         selected = "t.test",
                                         inline = TRUE
@@ -628,32 +630,6 @@ ui <- fluidPage(
                 column(2)
             )
         ),
-        # tabPanel("About",
-        #     value = 4,
-        #     fluidRow(
-        #         column(6,
-        #             p("about the project")
-        #         ),
-        #         column(6,
-        #             p("authors")
-        #         )
-        #     ),
-        #     fluidRow(
-        #         h3("paper:"),
-        #         br(),
-        #         downloadButton("downloadPaper", "Download")
-        #     ),
-        #     fluidRow(
-        #         tags$iframe(
-        #             style = "height:400px; width:100%; scrolling=yes",
-        #             src = "iLipidome-paper.pdf"
-        #             #edit path
-        #         )
-        #     )
-        # ),
-        # tabPanel("Download Example Datasets",
-            
-        # ),
         tabPanel("FAQ",
             fluidRow(
                 column(2),
@@ -682,7 +658,8 @@ ui <- fluidPage(
                     ),
                     br(),
                     p("Q: The website suddenly turned gray, what happened?"),
-                    tags$div("A: If the website suddenly turns gray, then an unexpected error occurred. To continue using the website, please refresh the webpage. If the issue persists, please open an issue ", 
+                    tags$div("A: If the website suddenly turns gray, then an unexpected error occurred. To continue using the website, please refresh the webpage. 
+                        If the issue persists, please open an issue ", 
                         tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
                     ),
                     br(),
@@ -708,13 +685,9 @@ ui <- fluidPage(
             
         ),
     ),
-    # disconnectMessage()
 )
 
 server <- function(input, output, session) {
-    # observeEvent(input$disconnect, {
-    #     session$close()
-    # })
 
     # output$logo <- renderImage({
     #     list(
@@ -1112,14 +1085,6 @@ server <- function(input, output, session) {
             })
         }
     })
-
-    # output$downloadPaper <- downloadHandler(
-    #     #change file paths
-    #     filename = "iLipidome-paper.pdf",
-    #     content = function(fileDownload) {
-    #         file.copy("iLipidome-paper.pdf", fileDownload)
-    #     }
-    # )
 
     # HANDLE RESULT PLOT TABLE DOWNLOAD HERE
     output$FAresBTN <- downloadHandler(
