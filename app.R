@@ -64,6 +64,8 @@ LS_network_info <- "The network consists of all the significant pathways include
 
 substructure_info <- "In this section, we present the results of the differential expression analysis conducted on the substructure-transformed data."
 
+FA_choices <- c("w3-22:6;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", "16:0;0", "w7-16:1;0", "16:0;0", "18:0;0", "w9-18:1;0", "w9-18:1;0", "w9-20:1;0", "w9-18:2;0", "w9-20:2;0", "w9-20:1;0", "w9-22:1;0", "w9-24:1;0", "w6-18:2;0", "w6-18:3;0", "w6-20:3;0", "w6-22:4;0", "w6-20:4;0", "w6-24:4;0", "w6-26:4;0", "w6-24:4;0", "w6-24:5;0", "w6-24:5;0", "w6-22:5;0", "w6-22:4;0", "w6-26:5;0", "w3-18:3;0", "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-24:5;0", "w3-24:6;0", "w3-24:6;0", "w3-26:6;0", "w3-22:6;0", "w3-22:5;0", "4:0;0", "6:0;0", "8:0;0", "10:0;0", "12:0;0", "14:0;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "26:0;0", "28:0;0", "w7-16:1;0", "w7-18:1;0", "w10-16:1;0", "w9-18:1;0", "w9-18:2;0", "w9-20:1;0", "w9-20:2;0", "w9-20:2;0", "w9-20:3;0", "w9-22:1;0", "w9-24:1;0", "w9-26:1;0", "w6-18:3;0", "w6-20:3;0", "w6-20:4;0", "w6-22:4;0", "w6-24:4;0", "w6-26:4;0", "w6-28:4;0", "w6-24:5;0", "w6-22:5;0", "w6-26:5;0", "w6-24:5;0", "w6-22:5;0", "w6-28:5;0", "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-28:5;0", "w3-24:6;0", "w3-22:6;0", "w3-26:6;0", "w3-28:6;0", "w3-24:6;0", "w3-22:6;0")
+
 ui <- fluidPage(
     # app title
     navbarPage(
@@ -138,104 +140,7 @@ ui <- fluidPage(
                                     selectInput("FAunmappedFA", 
                                         label = "Remove Low-expressed Fatty Acid Isomers:", 
                                         multiple = TRUE, 
-                                        choices = c(
-                                            "w3-22:6;0",
-                                            "16:0;0",
-                                            "18:0;0",
-                                            "20:0;0",
-                                            "22:0;0",
-                                            "24:0;0",
-                                            "26:0;0",
-                                            "16:0;0",
-                                            "w7-16:1;0",
-                                            "16:0;0",
-                                            "18:0;0",
-                                            "w9-18:1;0",
-                                            "w9-18:1;0",
-                                            "w9-20:1;0",
-                                            "w9-18:2;0",
-                                            "w9-20:2;0",
-                                            "w9-20:1;0",
-                                            "w9-22:1;0",
-                                            "w9-24:1;0",
-                                            "w6-18:2;0",
-                                            "w6-18:3;0",
-                                            "w6-20:3;0",
-                                            "w6-20:4;0",
-                                            "w6-22:4;0",
-                                            "w6-24:4;0",
-                                            "w6-26:4;0",
-                                            "w6-24:4;0",
-                                            "w6-24:5;0",
-                                            "w6-24:5;0",
-                                            "w6-22:5;0",
-                                            "w6-22:4;0",
-                                            "w6-26:5;0",
-                                            "w3-18:3;0",
-                                            "w3-18:4;0",
-                                            "w3-20:4;0",
-                                            "w3-20:5;0",
-                                            "w3-22:5;0",
-                                            "w3-24:5;0",
-                                            "w3-26:5;0",
-                                            "w3-24:5;0",
-                                            "w3-24:6;0",
-                                            "w3-24:6;0",
-                                            "w3-26:6;0",
-                                            "w3-22:6;0",
-                                            "w3-22:5;0",
-                                            "4:0;0",
-                                            "6:0;0",
-                                            "8:0;0",
-                                            "10:0;0",
-                                            "12:0;0",
-                                            "14:0;0",
-                                            "16:0;0",
-                                            "18:0;0",
-                                            "20:0;0",
-                                            "22:0;0",
-                                            "24:0;0",
-                                            "26:0;0",
-                                            "28:0;0",
-                                            "w7-16:1;0",
-                                            "w7-18:1;0",
-                                            "w10-16:1;0",
-                                            "w9-18:1;0",
-                                            "w9-18:2;0",
-                                            "w9-20:1;0",
-                                            "w9-20:2;0",
-                                            "w9-20:2;0",
-                                            "w9-20:3;0",
-                                            "w9-22:1;0",
-                                            "w9-24:1;0",
-                                            "w9-26:1;0",
-                                            "w6-18:3;0",
-                                            "w6-20:3;0",
-                                            "w6-20:4;0",
-                                            "w6-22:4;0",
-                                            "w6-24:4;0",
-                                            "w6-26:4;0",
-                                            "w6-28:4;0",
-                                            "w6-24:5;0",
-                                            "w6-22:5;0",
-                                            "w6-26:5;0",
-                                            "w6-24:5;0",
-                                            "w6-22:5;0",
-                                            "w6-28:5;0",
-                                            "w3-18:4;0",
-                                            "w3-20:4;0",
-                                            "w3-20:5;0",
-                                            "w3-22:5;0",
-                                            "w3-24:5;0",
-                                            "w3-26:5;0",
-                                            "w3-28:5;0",
-                                            "w3-24:6;0",
-                                            "w3-22:6;0",
-                                            "w3-26:6;0",
-                                            "w3-28:6;0",
-                                            "w3-24:6;0",
-                                            "w3-22:6;0"
-                                        ), 
+                                        choices = FA_choices, 
                                         width = "100%"
                                     ) %>% helper(
                                         type = "inline",
@@ -243,9 +148,10 @@ ui <- fluidPage(
                                         size = "l",
                                         content = unmapped_info
                                     ),
-                                    textInput("FAexolipid", 
+                                    selectInput("FAexolipid", 
                                         label = "Remove Exogenous Lipid Effect:",
-                                        # "w9-18:2;0, w3-20:4;0", 
+                                        multiple = TRUE, 
+                                        choices = FA_choices,
                                         width = "100%"
                                     ) %>% helper(
                                         type = "inline",
@@ -286,18 +192,19 @@ ui <- fluidPage(
                                 p(sig_path_info),
                                 span(textOutput("FA_nosig_path"), style="color:red"),
                                 DT::dataTableOutput("FAPathScoreDT"),
-                                plotOutput("FAPathScorePlot", width = "100%", height = "600"),
+                                plotOutput("FAPathScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Reaction Analysis",
                                 h4("Significant reactions in Fatty Acid Network"),
                                 p(sig_reaction_info),
                                 span(textOutput("FA_nosig_reaction"), style="color:red"),
                                 DT::dataTableOutput("FAReactionScoreDT"),
-                                plotOutput("FAReactionScorePlot", width = "100%", height = "600"),
+                                plotOutput("FAReactionScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Lipid Network",
                                 h4("Fatty Acid Network"),
                                 p(FALC_network_info),
+                                uiOutput("FANodeEdge"),
                                 visNetworkOutput("FANetworkGraph", height = "700px")
                             )
                         )
@@ -423,18 +330,19 @@ ui <- fluidPage(
                                 p(sig_path_info),
                                 span(textOutput("LS_nosig_path"), style="color:red"),
                                 DT::dataTableOutput("LSPathScoreDT"),
-                                plotOutput("LSPathScorePlot", width = "100%", height = "600"),
+                                plotOutput("LSPathScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Reaction Analysis",
                                 h4("Significant reactions in Lipid Species Network"),
                                 p(sig_reaction_info),
                                 span(textOutput("LS_nosig_reaction"), style="color:red"),
                                 DT::dataTableOutput("LSReactionScoreDT"),
-                                plotOutput("LSReactionScorePlot", width = "100%", height = "600"),
+                                plotOutput("LSReactionScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Lipid Network",
                                 h4("Lipid Species Network"),
                                 p(LS_network_info),
+                                uiOutput("LSNodeEdge"),
                                 visNetworkOutput("LSNetworkGraph", height = "700px")
                             )
                         )
@@ -547,18 +455,19 @@ ui <- fluidPage(
                                 p(sig_path_info),
                                 span(textOutput("LC_nosig_path"), style = "color:red"),
                                 DT::dataTableOutput("LCPathScoreDT"),
-                                plotOutput("LCPathScorePlot", width = "100%", height = "600"),
+                                plotOutput("LCPathScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Reaction Analysis",
                                 h4("Significant reactions in Lipid Class Network"),
                                 p(sig_reaction_info),
                                 span(textOutput("LC_nosig_reaction"), style = "color:red"),
                                 DT::dataTableOutput("LCReactionScoreDT"),
-                                plotOutput("LCReactionScorePlot", width = "100%", height = "600"),
+                                plotOutput("LCReactionScorePlot", width = "700", height = "600"),
                             ),
                             tabPanel("Lipid Network",
                                 h4("Lipid Class Network"),
                                 p(FALC_network_info),
+                                uiOutput("LCNodeEdge"),
                                 visNetworkOutput("LCNetworkGraph", height = "700px")
                             )
                         )
@@ -623,6 +532,7 @@ ui <- fluidPage(
                         lipid naming format. For example, PC_36:0;0 and PE_34:0;0 or PC_18:0;0_18:0;0 and PE_16:0;0_18:0;0. Additionally, dihydrosphingolipids (dh-) specify sphingolipids with 
                         sphingoid bases of 18:0:2 instead of 18:1:2."),
                     # ADD DOWNLOAD BUTTON FOR SUPPORTED LIPID CLASS DOT CSV
+                    downloadButton("Supported_lipid_class_download", "Download Supported Lipid Classes"),
 
                     h4("2.2.2 Assign group information:"),
                     p("Users can utilize the 'Control group' and 'Experimental group' parameters to assign group information for conducting a two-group comparison. Each group must include a 
@@ -669,7 +579,7 @@ ui <- fluidPage(
                     p("In this method, we transform the p-value ($P_i$) of each node ($i$) in a pathway into a z-score, which is used to calculate the pathway score. Specifically, we convert each 
                         p-value to a z-score using the formula $Z_i = CDF^{-1}(1 - \\frac{1}{2} * P_i)$, where CDF is the cumulative distribution function. If the fold change between two experimental conditions 
                         is less than 1, we assign a negative sign to $Z_i$. For random data, $Z_i$ follows a standard normal distribution."),
-                    p("To calculate the score of a pathway (a) with n nodes, we sum all $Z_i$ values within the pathway and divide by $\\sqrt{n}$, yielding $Z_a = \\frac{1}{\\sqrt{n}} \\times \\Sigma Z_i$ for $i \\in a$. Since the variance of a 
+                    p("To calculate the score of a pathway ($a$) with $n$ nodes, we sum all $Z_i$ values within the pathway and divide by $\\sqrt{n}$, yielding $Z_a = \\frac{1}{\\sqrt{n}} \\times \\Sigma Z_i$ for $i \\in a$. Since the variance of a 
                         sum is the sum of the variances for independent random variables, $Z_a$ also follows a standard normal distribution if the $Z_i$ values are independently drawn from a standard 
                         normal distribution. A high $Z_a$ indicates an active pathway, while a low $Z_a$ corresponds to a suppressed pathway. The length $n$ of the pathway is considered in the function 
                         to prevent over-weighting certain pathways."),
@@ -745,7 +655,40 @@ ui <- fluidPage(
             
         # ),
         tabPanel("FAQ",
-
+            fluidRow(
+                column(2),
+                column(8, 
+                    h3("Frequently Asked Questions"),
+                    p("In this section, you will find answers to commonly asked questions. If there is an issue that you can't find the answer to here, 
+                        please contact us using the info in the 'Contact Us' section of the website"),
+                    br(),
+                    p("Q: How do I use the iLipidome website?"),
+                    p("A: To get started with iLipidome, click on the 'Lipid Substructure Analysis' tab, select your dataset and parameters (if necessary), 
+                        and click 'Run Analysis'. A status bar will appear in the bottom-right hand side of your screen to indcate the progress of the computation, 
+                        and once it is done, you will be able to view the results in the five tabs directly below the 'Run Analysis' button."),
+                    br(),
+                    p("Q: What types of files are accepted?"),
+                    p("A: Currently, only .csv and .tsv files are accepted. "),
+                    br(),
+                    p("Q: How should I format my data?"),
+                    p("A: Guidelines on how to format your data can be found in section 2.2.1 of the 'Tutorial' tab of the website."),
+                    br(),
+                    p("Q: I clicked the 'Run Analysis' button, but nothing is happening..."),
+                    p(" "),
+                    tags$div("A: If you clicked the 'Run Analysis' button and nothing is happening, please first make sure you have either selected the example dataset or have 
+                        chosen your own dataset, and that there are no error messages pertaining to your own dataset. Otherwise, if the website grayed out, then an unexpected 
+                        error occurred somewhere along the computational process. To continue using the website, please refresh the webpage. If this persists, then please open an issue", 
+                        tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
+                    ),
+                    br(),
+                    p("Q: The website suddenly turned gray, what happened?"),
+                    tags$div("A: If the website suddenly turns gray, then an unexpected error occurred. To continue using the website, please refresh the webpage. If the issue persists, please open an issue ", 
+                        tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
+                    ),
+                    br(),
+                ),
+                column(2),
+            ),
         ),
         tabPanel("Contact Us",
             fluidRow(
@@ -860,14 +803,11 @@ server <- function(input, output, session) {
                                                    progress = FA_progress, update_progress = update_progress)
             }
             if (input$FAData == "FACustom") {
-                if (input$FAexolipid == "") { FAexo <- NULL }
-                else { FAexo <- str_trim(strsplit(input$FAexolipid, ",")[[1]]) }
-
                 FA_substructure_result <<- FA_substructure_analysis(FA_exp_raw, method = input$FAMethod,
                                         ctrl = unlist(lapply(str_trim(unlist(strsplit(input$FActrl, ","))), function(x) eval(parse(text = x)))),
                                         exp = unlist(lapply(str_trim(unlist(strsplit(input$FAexp, ","))), function(x) eval(parse(text = x)))),
                                         unmapped_FA = input$FAunmappedFA,
-                                        exo_lipid = FAexo, species = input$FAspecies,
+                                        exo_lipid = input$FAexolipid, species = input$FAspecies,
                                         progress = FA_progress, update_progress = update_progress)
             }
 
@@ -913,6 +853,12 @@ server <- function(input, output, session) {
 
             output$FAresDownload <- renderUI(expr = if (!is.null(FA_substructure_result)) {
                 downloadButton("FAresBTN", "Download Tables and Plots")
+            } else {
+                NULL
+            })
+
+            output$FANodeEdge <- renderUI(expr = if(!is.null(FA_substructure_result[[7]]) && !is.null(FA_substructure_result[[8]])) {
+                downloadButton("FANodeEdgeBTN", "Download Network Node and Edge Tables")
             } else {
                 NULL
             })
@@ -1033,6 +979,12 @@ server <- function(input, output, session) {
             } else {
                 NULL
             })
+
+            output$LSNodeEdge <- renderUI(expr = if(!is.null(LS_substructure_result[[7]]) && !is.null(LS_substructure_result[[8]])) {
+                downloadButton("LSNodeEdgeBTN", "Download Network Node and Edge Tables")
+            } else {
+                NULL
+            })
         }
         else { # display errors
             output$LS_error <- renderText({
@@ -1147,6 +1099,12 @@ server <- function(input, output, session) {
             } else {
                 NULL
             })
+
+            output$FANodeEdge <- renderUI(expr = if(!is.null(LC_substructure_result[[7]]) && !is.null(LC_substructure_result[[8]])) {
+                downloadButton("LCNodeEdgeBTN", "Download Network Node and Edge Tables")
+            } else {
+                NULL
+            })
         }
         else { # display errors
             output$LC_error <- renderText({
@@ -1239,6 +1197,60 @@ server <- function(input, output, session) {
         contentType = "application/zip"
     )
 
+    output$FANodeEdgeBTN <- downloadHandler(
+        filename = function() { paste("FA_Node_Edge_Tables", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            write.csv(FA_substructure_result[[7]], file.path(temp_directory, "FA_network_node.csv"))
+            write.csv(FA_substructure_result[[8]], file.path(temp_directory, "FA_network_edge.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
+    )
+
+    output$LSNodeEdgeBTN <- downloadHandler(
+        filename = function() { paste("LS_Node_Edge_Tables", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            write.csv(LS_substructure_result[[7]], file.path(temp_directory, "LS_network_node.csv"))
+            write.csv(LS_substructure_result[[8]], file.path(temp_directory, "LS_network_edge.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
+    )
+
+    output$LCNodeEdgeBTN <- downloadHandler(
+        filename = function() { paste("LC_Node_Edge_Tables", Sys.Date(), ".zip", sep = "") },
+        content = function(file) {
+            temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+            dir.create(temp_directory)
+
+            write.csv(LC_substructure_result[[7]], file.path(temp_directory, "LC_network_node.csv"))
+            write.csv(LC_substructure_result[[8]], file.path(temp_directory, "LC_network_edge.csv"))
+
+            zip::zip(
+                zipfile = file,
+                files = dir(temp_directory),
+                root = temp_directory
+            )
+        },
+        contentType = "application/zip"
+    )
+
     output$FAdownload <- downloadHandler(
         filename = "example_data/FA_substructure_analysis/exp.csv",
         content = function(fileDownload) {
@@ -1257,6 +1269,13 @@ server <- function(input, output, session) {
         filename = "example_data/lipid_class_substructure_analysis/exp.csv",
         content = function(fileDownload) {
             file.copy("example_data/lipid_class_substructure_analysis/exp.csv", fileDownload)
+        }
+    )
+
+    output$Supported_lipid_class_download <- downloadHandler(
+        filename = "supported_lipid_class.csv",
+        content = function(fileDownload) {
+            file.copy("supported_lipid_class.csv", fileDownload)
         }
     )
 }

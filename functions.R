@@ -1,4 +1,4 @@
-load("required_data.RData")
+# load("required_data.RData")
 
 #-------------------Analysis for unprocessed data-------------------
 # Parameters
@@ -854,7 +854,7 @@ check_data_format <- function(exp_data) {
   if (length(warning_message) != 0) {
     warning_message <- str_c(
       str_c(warning_message, collapse = "\n"),
-      "\n! Please check the help page for instructions on how to format the data"
+      "\n! Please refer to section 2.2.1 for instructions on how to format your data"
     )
   }
 
