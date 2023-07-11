@@ -8,6 +8,7 @@
 ## unmapped_FA: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## progress: progress object
 ## update_progress: progress bar update function
 
 FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
@@ -72,7 +73,7 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
   if (is.function(update_progress)) {
     update_progress(progress = progress, detail = "Substructure transformation complete.")
   }
-  
+
   # Essential pathway analysis for FA substructures
 
   set.seed(1)
@@ -101,11 +102,10 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     add_suffix <- function(strings) {
       counts <- table(strings)
       duplicated_indices <- which(duplicated(strings))
-
+      count <- 2
       for (index in duplicated_indices) {
-        count <- counts[strings[index]]
         strings[index] <- paste(strings[index], paste0("(", count, ")"), sep = "")
-        counts[strings[index]] <- count + 2
+        count <- count + 1
       }
 
       return(strings)
@@ -242,22 +242,35 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  sub_result <- FA_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
-                  "log2FC","p_value", "adj_p_value", "sig")] %>% 
-    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
-                   'P-value','Adjusted p-value', 'Significance')) %>% 
-    arrange(`Adjusted p-value`,desc(Substructure))
-  
-  network_node <- FA_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
-  network_edge <- FA_network_data[[2]] %>% 
-    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
-    left_join(reaction_score_FA[,c("edge_name", "p_value",
-                                   'perturbation_score' ,'Mode', 'genes')] %>% 
-                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
-              by='Reaction')  %>% arrange(desc(label))
+  #---------------------new code--------------------------------
 
-  return(list(path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
-              reaction_data_fig, network, sub_result, network_node, network_edge))
+  sub_result <- FA_sub_exp_t[, c(
+    "lipid", "mean_ctrl", "mean_exp", "FC",
+    "log2FC", "p_value", "adj_p_value", "sig"
+  )] %>%
+    `colnames<-`(c(
+      "Substructure", "Mean(ctrl)", "Mean(exp)", "FC", "Log2(FC)",
+      "P-value", "Adjusted p-value", "Significance"
+    )) %>%
+    arrange(`Adjusted p-value`, desc(Substructure))
+
+  network_node <- FA_network_data[[1]] %>% left_join(sub_result, by = c("id" = "Substructure"))
+  network_edge <- FA_network_data[[2]] %>%
+    mutate(Reaction = str_c(from, " --> ", to)) %>%
+    left_join(
+      reaction_score_FA[, c(
+        "edge_name", "p_value",
+        "perturbation_score", "Mode", "genes"
+      )] %>%
+        `colnames<-`(c("Reaction", "P-value", "Perturbation score", "Type", "Gene")),
+      by = "Reaction"
+    ) %>%
+    arrange(desc(label))
+
+  return(list(
+    path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
+    reaction_data_fig, network, sub_result, network_node, network_edge
+  ))
 }
 
 #-------------------Analysis for unprocessed data-------------------
@@ -267,6 +280,7 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 ## exp: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## progress: progress object
 ## update_progress: progress bar update function
 
 lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
@@ -363,11 +377,10 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     add_suffix <- function(strings) {
       counts <- table(strings)
       duplicated_indices <- which(duplicated(strings))
-
+      count <- 2
       for (index in duplicated_indices) {
-        count <- counts[strings[index]]
         strings[index] <- paste(strings[index], paste0("(", count, ")"), sep = "")
-        counts[strings[index]] <- count + 2
+        count <- count + 1
       }
 
       return(strings)
@@ -481,12 +494,14 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         y = "", fill = "Reaction", x = "Perturbation score",
         title = "Top 5 significant reactions"
       )
+
+    reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Mode", "genes")]
+    colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Type", "Gene")
   }
   print("Reaction analysis complete.")
   if (is.function(update_progress)) {
     update_progress(progress = progress, detail = "Reaction analysis complete.")
   }
-
 
   # Lipid species biosynthetic network construction
 
@@ -506,22 +521,35 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  sub_result <- species_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
-                                   "log2FC","p_value", "adj_p_value", "sig")] %>% 
-    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
-                   'P-value','Adjusted p-value', 'Significance')) %>% 
-    arrange(`Adjusted p-value`,desc(Substructure))
-  
-  network_node <- species_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
-  network_edge <- species_network_data[[2]] %>% 
-    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
-    left_join(reaction_score[,c("edge_name", "p_value",
-                                'perturbation_score' ,'Mode', 'genes')] %>% 
-                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
-              by='Reaction') %>% arrange(desc(label))
-  
-  return(list(path_score_sel, path_data_fig, reaction_score_sel,
-              reaction_data_fig,network, sub_result, network_node, network_edge))
+  #---------------------new code--------------------------------
+
+  sub_result <- species_sub_exp_t[, c(
+    "lipid", "mean_ctrl", "mean_exp", "FC",
+    "log2FC", "p_value", "adj_p_value", "sig"
+  )] %>%
+    `colnames<-`(c(
+      "Substructure", "Mean(ctrl)", "Mean(exp)", "FC", "Log2(FC)",
+      "P-value", "Adjusted p-value", "Significance"
+    )) %>%
+    arrange(`Adjusted p-value`, desc(Substructure))
+
+  network_node <- species_network_data[[1]] %>% left_join(sub_result, by = c("id" = "Substructure"))
+  network_edge <- species_network_data[[2]] %>%
+    mutate(Reaction = str_c(from, " --> ", to)) %>%
+    left_join(
+      reaction_score[, c(
+        "edge_name", "p_value",
+        "perturbation_score", "Mode", "genes"
+      )] %>%
+        `colnames<-`(c("Reaction", "P-value", "Perturbation score", "Type", "Gene")),
+      by = "Reaction"
+    ) %>%
+    arrange(desc(label))
+
+  return(list(
+    path_score_sel, path_data_fig, reaction_score_sel,
+    reaction_data_fig, network, sub_result, network_node, network_edge
+  ))
 }
 
 #-------------------Analysis for unprocessed data-------------------
@@ -531,10 +559,11 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
 ## exp: blank or ?
 ## exo_lipid: blank or ?
 ## species (drop down menu): human, mouse, rat
+## progress: progress object
 ## update_progress: progress bar update function
 
 lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
-                                              exo_lipid = NULL, species = "rat", 
+                                              exo_lipid = NULL, species = "rat",
                                               progress = NULL, update_progress = NULL) {
   exp_data <- build_char_table(exp_raw, network_node = network_node)[[1]]
 
@@ -624,11 +653,10 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     add_suffix <- function(strings) {
       counts <- table(strings)
       duplicated_indices <- which(duplicated(strings))
-
+      count <- 2
       for (index in duplicated_indices) {
-        count <- counts[strings[index]]
         strings[index] <- paste(strings[index], paste0("(", count, ")"), sep = "")
-        counts[strings[index]] <- count + 2
+        count <- count + 1
       }
 
       return(strings)
@@ -736,12 +764,14 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         y = "", fill = "Reaction", x = "Perturbation score",
         title = "Top 5 significant reactions"
       )
+
+    reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Mode", "genes")]
+    colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Type", "Gene")
   }
   print("Reaction analysis complete.")
   if (is.function(update_progress)) {
     update_progress(progress = progress, detail = "Reaction analysis complete.")
   }
-
 
   # Lipid class biosynthetic network construction
 
@@ -760,22 +790,35 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     update_progress(progress = progress, detail = "Network analysis complete.")
   }
 
-  sub_result <- class_sub_exp_t[,c("lipid", "mean_ctrl", "mean_exp", "FC",
-                                "log2FC","p_value", "adj_p_value", "sig")] %>% 
-    `colnames<-`(c('Substructure', 'Mean(ctrl)','Mean(exp)','FC', 'Log2(FC)',
-                   'P-value','Adjusted p-value', 'Significance')) %>% 
-    arrange(`Adjusted p-value`,desc(Substructure))
-  
-  network_node <- class_network_data[[1]] %>% left_join(sub_result, by=c('id'='Substructure'))
-  network_edge <- class_network_data[[2]] %>% 
-    mutate(Reaction=str_c(from, ' --> ', to)) %>% 
-    left_join(reaction_score[,c("edge_name", "p_value",
-                                   'perturbation_score' ,'Mode', 'genes')] %>% 
-                `colnames<-`(c('Reaction', 'P-value', 'Perturbation score', 'Type', 'Gene')),
-              by='Reaction')  %>% arrange(desc(label))
-  
-  return(list(path_score_sel, path_data_fig, reaction_score_sel,
-              reaction_data_fig,network, sub_result, network_node, network_edge))
+  #---------------------new code--------------------------------
+
+  sub_result <- class_sub_exp_t[, c(
+    "lipid", "mean_ctrl", "mean_exp", "FC",
+    "log2FC", "p_value", "adj_p_value", "sig"
+  )] %>%
+    `colnames<-`(c(
+      "Substructure", "Mean(ctrl)", "Mean(exp)", "FC", "Log2(FC)",
+      "P-value", "Adjusted p-value", "Significance"
+    )) %>%
+    arrange(`Adjusted p-value`, desc(Substructure))
+
+  network_node <- class_network_data[[1]] %>% left_join(sub_result, by = c("id" = "Substructure"))
+  network_edge <- class_network_data[[2]] %>%
+    mutate(Reaction = str_c(from, " --> ", to)) %>%
+    left_join(
+      reaction_score[, c(
+        "edge_name", "p_value",
+        "perturbation_score", "Mode", "genes"
+      )] %>%
+        `colnames<-`(c("Reaction", "P-value", "Perturbation score", "Type", "Gene")),
+      by = "Reaction"
+    ) %>%
+    arrange(desc(label))
+
+  return(list(
+    path_score_sel, path_data_fig, reaction_score_sel,
+    reaction_data_fig, network, sub_result, network_node, network_edge
+  ))
 }
 
 #-------------------Check for correct data format-------------------
