@@ -70,8 +70,11 @@ FA_choices <- c("w3-22:6;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "
                 "w3-18:4;0", "w3-20:4;0", "w3-20:5;0", "w3-22:5;0", "w3-24:5;0", "w3-26:5;0", "w3-28:5;0", "w3-24:6;0", "w3-22:6;0", "w3-26:6;0", "w3-28:6;0", "w3-24:6;0", "w3-22:6;0")
 
 ui <- fluidPage(
-    # app title
+    # image in browser tab
+    tags$head(tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "/ilipidome_logo.png")),
+
     navbarPage(
+        # app title
         "iLipidome",
         # imageOutput("logo"),
         tabPanel("Lipid Substructure Analysis",
@@ -494,6 +497,8 @@ ui <- fluidPage(
                                     </script>
                                     ")),
 
+                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
+
                     h1("About iLipidome"),
                     
                     h3("1 What is iLipidome?"),
@@ -644,31 +649,32 @@ ui <- fluidPage(
             fluidRow(
                 column(2),
                 column(8, 
+                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
                     h3("Frequently Asked Questions"),
                     p("In this section, you will find answers to commonly asked questions. If there is an issue that you can't find the answer to here, 
                         please contact us using the info in the 'Contact Us' section of the website"),
                     br(),
-                    p("Q: How do I use the iLipidome website?"),
-                    p("A: To get started with iLipidome, click on the 'Lipid Substructure Analysis' tab, select your dataset and parameters (if necessary), 
+                    p("Q1: How do I use the iLipidome website?"),
+                    p("Answer: To get started with iLipidome, click on the 'Lipid Substructure Analysis' tab, select your dataset and parameters (if necessary), 
                         and click 'Run Analysis'. A status bar will appear in the bottom-right hand side of your screen to indcate the progress of the computation, 
                         and once it is done, you will be able to view the results in the five tabs directly below the 'Run Analysis' button."),
                     br(),
-                    p("Q: What types of files are accepted?"),
-                    p("A: Currently, only .csv and .tsv files are accepted. "),
+                    p("Q2: What types of files are accepted?"),
+                    p("Answer: Currently, only .csv and .tsv files are accepted. "),
                     br(),
-                    p("Q: How should I format my data?"),
-                    p("A: Guidelines on how to format your data can be found in section 2.2.1 of the 'Tutorial' tab of the website."),
+                    p("Q3: How should I format my data?"),
+                    p("Answer: Guidelines on how to format your data can be found in section 2.2.1 of the 'Tutorial' tab of the website."),
                     br(),
-                    p("Q: I clicked the 'Run Analysis' button, but nothing is happening..."),
+                    p("Q4: I clicked the 'Run Analysis' button, but nothing is happening..."),
                     p(" "),
-                    tags$div("A: If you clicked the 'Run Analysis' button and nothing is happening, please first make sure you have either selected the example dataset or have 
+                    tags$div("Answer: If you clicked the 'Run Analysis' button and nothing is happening, please first make sure you have either selected the example dataset or have 
                         chosen your own dataset, and that there are no error messages pertaining to your own dataset. Otherwise, if the website grayed out, then an unexpected 
                         error occurred somewhere along the computational process. To continue using the website, please refresh the webpage. If this persists, then please open an issue", 
                         tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
                     ),
                     br(),
-                    p("Q: The website suddenly turned gray, what happened?"),
-                    tags$div("A: If the website suddenly turns gray, then an unexpected error occurred. To continue using the website, please refresh the webpage. 
+                    p("Q5: The website suddenly turned gray, what happened?"),
+                    tags$div("Answer: If the website suddenly turns gray, then an unexpected error occurred. To continue using the website, please refresh the webpage. 
                         If the issue persists, please open an issue ", 
                         tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
                     ),
@@ -681,6 +687,8 @@ ui <- fluidPage(
             fluidRow(
                 column(2),
                 column(8,
+                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
+                    h3("Contact Us"),
                     p("If you would like to reach out to us, please send an email to <waxlos987@gmail.com> and/or <austin.chiang@gmail.com> with 'iLipidome'
                     followed by the topic of the email in the subject line. "
                     ),
@@ -688,7 +696,19 @@ ui <- fluidPage(
                     p("  "),
                     tags$div("If there is an issue with the website you would like to report, please create an issue ", 
                         tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
-                    )
+                    ),
+                    br(), br(),
+                    h3("References:"),
+                    tags$ul(
+                        tags$li("Lin W.J.*, Chiang A.W.T.*‡, Zhou E.H., Liang C., Liu C.H., Ma W.L., Cheng W.C., Lewis N.E.‡ iLipidome: hidden biosynthetic interdependencies in the lipidome enhance statistical power and interpretability. submitted (2023). Under review at Nature Communications."),
+                        tags$li("Bao, B. et al. Correcting for sparsity and interdependence in glycomics by accounting for glycan biosynthesis. Nature communications 12, 4988, doi:10.1038/s41467-021-25183-5 (2021)."),
+                        tags$li("Lin, W.-J. et al. LipidSig: a web-based tool for lipidomic data analysis. Nucleic Acids Research 49, W336-W345, doi:10.1093/nar/gkab419 (2021).")
+                    ),
+                    br(),
+                    p("Please cite Lin and Chiang et al. Nature Commun. 2023 XX(XX):XXXX within any publication that makes use of analyses inspired by iLipidome."),
+                    br(),
+                    h3("Acknowledgements"),
+                    p("This work was supported by NIGMS (R35 GM119850) and generous support from the Novo Nordisk Foundation provided to the National Biologics Facility at the Technical University of Denmark (NNF20SA0066621). It was also supported by National Health Research Institute: grant # NHRI-EX111-11110BI, National Science and Technology Council: grant # MOST 111-2320-B-039-011, and China Medical University Hospital: grant # DMR-110-231, and # DMR-111-118. WJL was supported by the Elite Cultivation Scholarship Program Sponsored by China Medical University.")
                 ),
                 column(2)
             )
