@@ -130,14 +130,14 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         x = "", y = "Pathway score",
         title = "Top 5 representative pathways"
       )
-
-    path_score_FA_sel <- path_score_FA_sel[, c("path", "from", "to", "cal_score", "Type", "rep_sub_path")]
-
-    colnames(path_score_FA_sel) <- c("Pathway", "From", "To", "Score", "Type", "Representative pathway")
   } else {
     path_data_fig <- NA
     path_score_FA_sel <- NA
   }
+
+  path_score_FA_sel <- path_score_FA[, c("path", "from", "to", "cal_score", "Significant", "Type", "rep_sub_path")]
+
+  colnames(path_score_FA_sel) <- c("Pathway", "From", "To", "Score", "Significant", "Type", "Representative pathway")
 
   print("Pathway analysis complete.")
   if (is.function(update_progress)) {
@@ -207,13 +207,15 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         y = "", fill = "Reaction", x = "Perturbation score",
         title = "Top 5 significant reations"
       )
-
-    reaction_score_FA_sel <- reaction_score_FA_sel[, c("edge_name", "p_value", "perturbation_score", "Mode", "genes")]
-    colnames(reaction_score_FA_sel) <- c("Reaction", "P-value", "Perturbation score", "Type", "Gene")
   } else {
     reaction_score_FA_sel <- NA
     reaction_data_fig <- NA
   }
+
+  reaction_score_FA_sel <- reaction_score_FA %>% mutate(Significant = ifelse(p_value < 0.05, "yes", "no"))
+  reaction_score_FA_sel <- reaction_score_FA_sel[, c("edge_name", "p_value", "perturbation_score", "Significant", "Mode", "genes")]
+
+  colnames(reaction_score_FA_sel) <- c("Reaction", "P-value", "Perturbation score", "Significant", "Type", "Gene")
 
   print("Reaction analysis complete.")
   if (is.function(update_progress)) {
@@ -267,9 +269,22 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     ) %>%
     arrange(desc(label))
 
+  DE_lipid_data <- FA_sub_exp_t %>%
+    mutate(log2FC = ifelse(is.infinite(log2FC), 10 * sign(log2FC), log2FC)) %>%
+    mutate(Significance = ifelse(log2FC > 0, "Increase", "Decrease")) %>%
+    mutate(Significance = ifelse(sig == "yes", Significance, "No change")) %>%
+    ggplot(aes(x = log2FC, y = mlog10padj, col = Significance)) +
+    geom_jitter(width = 0.3) +
+    # scale_x_continuous(limits = c(-10,10), labels = c('-Inf','-5','0','5', 'Inf'))+
+    scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
+    geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
+    theme_classic() +
+    theme(legend.position = "top") +
+    labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
+
   return(list(
     path_score_FA_sel, path_data_fig, reaction_score_FA_sel,
-    reaction_data_fig, network, sub_result, network_node, network_edge
+    reaction_data_fig, network, sub_result, network_node, network_edge, DE_lipid_data
   ))
 }
 
@@ -406,10 +421,11 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         title = "Top 5 representative pathways"
       )
   }
+  path_score_sel <- path_score[, c("path", "from", "to", "cal_score", "Significant", "Type", "rep_sub_path")]
 
-  path_score_sel <- path_score_sel[, c("path", "from", "to", "cal_score", "Type", "rep_sub_path")]
+  colnames(path_score_sel) <- c("Pathway", "From", "To", "Score", "Significant", "Type", "Representative pathway")
 
-  colnames(path_score_sel) <- c("Pathway", "From", "To", "Score", "Type", "Representative pathway")
+
 
 
   print("Pathway analysis complete.")
@@ -494,10 +510,12 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         y = "", fill = "Reaction", x = "Perturbation score",
         title = "Top 5 significant reactions"
       )
-
-    reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Mode", "genes")]
-    colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Type", "Gene")
   }
+  reaction_score_sel <- reaction_score %>% mutate(Significant = ifelse(p_value < 0.05, "yes", "no"))
+  reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Significant", "Mode", "genes")]
+
+  colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Significant", "Type", "Gene")
+
   print("Reaction analysis complete.")
   if (is.function(update_progress)) {
     update_progress(progress = progress, detail = "Reaction analysis complete.")
@@ -546,9 +564,23 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     ) %>%
     arrange(desc(label))
 
+  DE_lipid_data <- species_sub_exp_t %>%
+    mutate(log2FC = ifelse(is.infinite(log2FC), 10 * sign(log2FC), log2FC)) %>%
+    mutate(Significance = ifelse(log2FC > 0, "Increase", "Decrease")) %>%
+    mutate(Significance = ifelse(sig == "yes", Significance, "No change")) %>%
+    ggplot(aes(x = log2FC, y = mlog10padj, col = Significance)) +
+    geom_jitter(width = 0.3) +
+    # scale_x_continuous(limits = c(-10,10), labels = c('-Inf','-5','0','5', 'Inf'))+
+    scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
+    geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
+    theme_classic() +
+    theme(legend.position = "top") +
+    labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
+
   return(list(
     path_score_sel, path_data_fig, reaction_score_sel,
-    reaction_data_fig, network, sub_result, network_node, network_edge
+    reaction_data_fig, network, sub_result, network_node, network_edge,
+    DE_lipid_data
   ))
 }
 
@@ -683,9 +715,9 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       )
   }
 
-  path_score_sel <- path_score_sel[, c("path", "from", "to", "cal_score", "Type", "rep_sub_path")]
+  path_score_sel <- path_score[, c("path", "from", "to", "cal_score", "Significant", "Type", "rep_sub_path")]
 
-  colnames(path_score_sel) <- c("Pathway", "From", "To", "Score", "Type", "Representative pathway")
+  colnames(path_score_sel) <- c("Pathway", "From", "To", "Score", "Significant", "Type", "Representative pathway")
 
 
   print("Pathway analysis complete.")
@@ -741,11 +773,10 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       mutate(edge_color = paste0(node1_color, node2_color))
 
 
-
     reaction_data_fig <- reaction_data %>%
       ggplot(aes(
         x = perturbation_score, y = reorder(edge_name, perturbation_score),
-        fill = Mode, color = Edge_direction
+        fill = Mode
       )) +
       geom_bar(stat = "identity", size = 0.8) +
       scale_y_discrete(
@@ -758,16 +789,17 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
         axis.text.y = element_markdown(),
         plot.title = element_text(hjust = 0.5)
       ) +
-      scale_fill_manual(values = rev(pal_lancet()(2))) +
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       labs(
         y = "", fill = "Reaction", x = "Perturbation score",
         title = "Top 5 significant reactions"
       )
-
-    reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Mode", "genes")]
-    colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Type", "Gene")
   }
+  reaction_score_sel <- reaction_score %>% mutate(Significant = ifelse(p_value < 0.05, "yes", "no"))
+  reaction_score_sel <- reaction_score_sel[, c("edge_name", "p_value", "perturbation_score", "Significant", "Mode", "genes")]
+
+  colnames(reaction_score_sel) <- c("Reaction", "P-value", "Perturbation score", "Significant", "Type", "Gene")
+
   print("Reaction analysis complete.")
   if (is.function(update_progress)) {
     update_progress(progress = progress, detail = "Reaction analysis complete.")
@@ -815,9 +847,23 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     ) %>%
     arrange(desc(label))
 
+  DE_lipid_data <- class_sub_exp_t %>%
+    mutate(log2FC = ifelse(is.infinite(log2FC), 10 * sign(log2FC), log2FC)) %>%
+    mutate(Significance = ifelse(log2FC > 0, "Increase", "Decrease")) %>%
+    mutate(Significance = ifelse(sig == "yes", Significance, "No change")) %>%
+    ggplot(aes(x = log2FC, y = mlog10padj, col = Significance)) +
+    geom_jitter(width = 0.3) +
+    # scale_x_continuous(limits = c(-10,10), labels = c('-Inf','-5','0','5', 'Inf'))+
+    scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
+    geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
+    theme_classic() +
+    theme(legend.position = "top") +
+    labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
+
   return(list(
     path_score_sel, path_data_fig, reaction_score_sel,
-    reaction_data_fig, network, sub_result, network_node, network_edge
+    reaction_data_fig, network, sub_result, network_node, network_edge,
+    DE_lipid_data
   ))
 }
 
