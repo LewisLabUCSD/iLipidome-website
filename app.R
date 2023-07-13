@@ -187,6 +187,7 @@ ui <- fluidPage(
                             tabPanel("Substructure Analysis",
                                 h4("Differential Expression Analysis"),
                                 p(substructure_info),
+                                plotOutput("FAvolcano", width = "700", height = "600"),
                                 DT::dataTableOutput("FAsubres")
                             ),
                             tabPanel("Pathway Analysis",
@@ -324,7 +325,8 @@ ui <- fluidPage(
                             ),
                             tabPanel("Substructure Analysis",
                                 h4("Differential Expression Analysis"),
-                                p(substructure_info),                                
+                                p(substructure_info),
+                                plotOutput("LSvolcano", width = "700", height = "600"),
                                 DT::dataTableOutput("LSsubres")
                             ),
                             tabPanel("Pathway Analysis",
@@ -450,6 +452,7 @@ ui <- fluidPage(
                             tabPanel("Substructure Analysis",
                                 h4("Differential Expression Analysis"),
                                 p(substructure_info),
+                                plotOutput("LCvolcano", width = "700", height = "600"),
                                 DT::dataTableOutput("LCsubres")
                             ),
                             tabPanel("Pathway Analysis",
@@ -831,6 +834,8 @@ server <- function(input, output, session) {
                     DT::formatRound(which(sapply(FA_substructure_result[[6]], is.numeric)), digits = 3)
             })
 
+            output$FAvolcano <- renderPlot(plot(FA_substructure_result[[9]]))
+
             output$FAresDownload <- renderUI(expr = if (!is.null(FA_substructure_result)) {
                 downloadButton("FAresBTN", "Download Tables and Plots")
             } else {
@@ -954,6 +959,8 @@ server <- function(input, output, session) {
                     DT::formatRound(which(sapply(LS_substructure_result[[6]], is.numeric)), digits = 3)
             })
 
+            output$LSvolcano <- renderPlot(plot(LS_substructure_result[[9]]))
+
             output$LSresDownload <- renderUI(expr = if (!is.null(LS_substructure_result)) {
                 downloadButton("LSresBTN", "Download Tables and Plots")
             } else {
@@ -1074,6 +1081,8 @@ server <- function(input, output, session) {
                     DT::formatRound(which(sapply(LC_substructure_result[[6]], is.numeric)), digits = 3)
             })
 
+            output$LCvolcano <- renderPlot(plot(LC_substructure_result[[9]]))
+
             output$LCresDownload <- renderUI(expr = if (!is.null(LC_substructure_result)) {
                 downloadButton("LCresBTN", "Download Tables and Plots")
             } else {
@@ -1103,6 +1112,7 @@ server <- function(input, output, session) {
             pdf(file.path(temp_directory, "FA_plots.pdf"))
             print(FA_substructure_result[[2]])
             print(FA_substructure_result[[4]])
+            print(FA_substructure_result[[9]])
             # FA_substructure_result[[5]] %>% View
             dev.off()
 
@@ -1126,14 +1136,15 @@ server <- function(input, output, session) {
             dir.create(temp_directory)
 
             pdf(file.path(temp_directory, "LS_plots.pdf"))
-            print(FA_substructure_result[[2]])
-            print(FA_substructure_result[[4]])
-            # FA_substructure_result[[5]] %>% View
+            print(LS_substructure_result[[2]])
+            print(LS_substructure_result[[4]])
+            print(LS_substructure_result[[9]])
+            # LS_substructure_result[[5]] %>% View
             dev.off()
 
-            write.csv(FA_substructure_result[[1]], file.path(temp_directory, "LS_sig_pathways.csv"))
-            write.csv(FA_substructure_result[[3]], file.path(temp_directory, "LS_sig_reactions.csv"))
-            write.csv(FA_substructure_result[[6]], file.path(temp_directory, "LS_diff_exp.csv"))
+            write.csv(LS_substructure_result[[1]], file.path(temp_directory, "LS_sig_pathways.csv"))
+            write.csv(LS_substructure_result[[3]], file.path(temp_directory, "LS_sig_reactions.csv"))
+            write.csv(LS_substructure_result[[6]], file.path(temp_directory, "LS_diff_exp.csv"))
 
             zip::zip(
                 zipfile = file,
@@ -1151,14 +1162,15 @@ server <- function(input, output, session) {
             dir.create(temp_directory)
 
             pdf(file.path(temp_directory, "LC_plots.pdf"))
-            print(FA_substructure_result[[2]])
-            print(FA_substructure_result[[4]])
-            # FA_substructure_result[[5]]
+            print(LC_substructure_result[[2]])
+            print(LC_substructure_result[[4]])
+            print(LC_substructure_result[[9]])
+            # LC_substructure_result[[5]]
             dev.off()
 
-            write.csv(FA_substructure_result[[1]], file.path(temp_directory, "LC_sig_pathways.csv"))
-            write.csv(FA_substructure_result[[3]], file.path(temp_directory, "LC_sig_reactions.csv"))
-            write.csv(FA_substructure_result[[6]], file.path(temp_directory, "LC_diff_exp.csv"))
+            write.csv(LC_substructure_result[[1]], file.path(temp_directory, "LC_sig_pathways.csv"))
+            write.csv(LC_substructure_result[[3]], file.path(temp_directory, "LC_sig_reactions.csv"))
+            write.csv(LC_substructure_result[[6]], file.path(temp_directory, "LC_diff_exp.csv"))
 
             zip::zip(
                 zipfile = file,
