@@ -124,7 +124,8 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       theme(
         plot.title = element_text(hjust = 0.5),
-        legend.position = "top"
+        legend.position = "top", 
+        text = element_text(size = 16)
       ) +
       labs(
         x = "", y = "Pathway score",
@@ -200,7 +201,8 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       theme(
         legend.position = "top",
         axis.text.y = element_markdown(),
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        text = element_text(size = 20)
       ) +
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       labs(
@@ -279,7 +281,8 @@ FA_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
     geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
     theme_classic() +
-    theme(legend.position = "top") +
+    theme(legend.position = "top", 
+          text = element_text(size = 20)) +
     labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
 
   return(list(
@@ -414,7 +417,8 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       theme(
         legend.position = "top",
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        text = element_text(size = 20)
       ) +
       labs(
         x = "", y = "Pathway score",
@@ -503,7 +507,8 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       theme(
         legend.position = "top",
         axis.text.y = element_markdown(),
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        text = element_text(size = 20)
       ) +
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       labs(
@@ -574,7 +579,8 @@ lipid_species_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
     geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
     theme_classic() +
-    theme(legend.position = "top") +
+    theme(legend.position = "top", 
+          text = element_text(size = 20)) +
     labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
 
   return(list(
@@ -707,7 +713,8 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       theme(
         legend.position = "top",
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        text = element_text(size = 20)
       ) +
       labs(
         x = "", y = "Pathway score",
@@ -787,7 +794,8 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
       theme(
         legend.position = "top",
         axis.text.y = element_markdown(),
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        text = element_text(size = 20)
       ) +
       scale_fill_manual(values = c("Increase" = "red", "Decrease" = "blue")) +
       labs(
@@ -857,7 +865,8 @@ lipid_class_substructure_analysis <- function(exp_raw, method, ctrl, exp,
     scale_color_manual(values = c("Increase" = "red", "Decrease" = "blue", "No change" = "gray")) +
     geom_hline(yintercept = -log10(0.05), col = "red", linetype = "dashed") +
     theme_classic() +
-    theme(legend.position = "top") +
+    theme(legend.position = "top", 
+          text = element_text(size = 20)) +
     labs(y = "-Log10 (Adjusted p-value)", x = "Log2 (Fold change)")
 
   return(list(
