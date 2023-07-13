@@ -520,6 +520,7 @@ ui <- fluidPage(
                     h4("2.2.1 How to prepare your dataset?"),
                     p("To use iLipidome, you need to upload a lipid expression table (CSV format). The table should have lipids as rows and samples as columns. The first column should be named 
                         'feature' and contain the lipid names. The remaining columns should contain the sample names and the corresponding values for each lipid."),
+                    tags$img(src = "dataset_format.png", align = "center", width = "100%"),
                     p("Currently, iLipidome supports two-group comparison for analyzing lipidomics data. Ensure that you have at least two samples in each group for calculating statistics. 
                         Depending on the data source, you may need to perform data processing or normalization methods such as missing value imputation or log transformation to improve the 
                         analysis results before uploading."),
@@ -542,12 +543,14 @@ ui <- fluidPage(
                         It is important to consider that the first column of the dataset contains the names of the lipids, so the counting for grouping should start from the second column onwards. 
                         For example, if the lipid dataset has the lipid names in the first column, and columns 2 to 4 represent the control group while columns 5 to 7 represent the experimental 
                         group, you would enter '1,2,3' in the 'Control group' field and '4,5,6' in the 'Experimental group' field."),
+                    tags$img(src = "ctrl_img.png", align = "center", width = "100%"),
 
                     h4("2.2.3 Remove low-expressed fatty acid isomers (only in the fatty acid section):"),
                     p("Due to limitations in mass spectrometry, precise double bond locations for fatty acids are often not available in lipidomics data. As a result, certain fatty acids may have 
                         multiple candidate mappings in the fatty acid network. However, some fatty acid isomers may be dominant, while others may be negligible. For exmaple, the major isomer of 
                         FA 20:4 is omega-6, not omega-3. Treating all isomers equally in the substructure calculation may not accurately reflect their true abundance. This parameter enables users 
                         to select low-expressed fatty acid isomers to exclude from decomposition into substructures within the fatty acid network, therefore improving the accuracy of calculations."),
+                    tags$img(src = "FA_img.png", align = "center", width = "100%"),
 
                     h4("2.2.4 Percentage of non-missing values to retain a pathway (only in the lipid species section):"),
                     p("During the substructure decomposition process in iLipidome, each lipid is decomposed based on its potential biosynthetic pathways. To avoid artifacts, a threshold is set to 
@@ -562,6 +565,7 @@ ui <- fluidPage(
                         fatty acids observed in the study to restrict substructure decomposition. In the lipid species and lipid class sections, users can enter the exogenous lipid names separated 
                         by commas. For example, you can enter 'PC_16:0;0_22:6;0, PC_18:0;0_22:6;0'. Please ensure that the lipid names or classes you enter correspond to those present in the uploaded 
                         dataset."),
+                    tags$img(src = "exo_img.png", align = "center", width = "100%"),
 
                     h4("2.2.6 Species:"),
                     p("Currently, iLipidome supports the analysis of lipidomics data for three species: human, mouse, and rat."),
@@ -574,6 +578,7 @@ ui <- fluidPage(
                         decreased pathways are shown in blue. A pathway is considered significant if its score exceeds $1.96$. The figure represents pathways using starting and ending lipids. 
                         Additionally, a comprehensive summary of all significant pathways can be found in the accompanying table. For a deeper understanding of how we calculate pathway scores, 
                         calibrate pathways, and select representative pathways, detailed information is available below."),
+                    tags$img(src = "path_img.png", align = "center", width = "100%"),
 
                     h4("3.1.1 Pathway scoring method"), # USE MATHEMATICAL SYMBOLS FOR THIS SECTION, WITHMATHJAX
                     p("To analyze the pathways within the biosynthetic network, we firstly identify all possible pathways between any two nodes. We then examine the increased and decreased 
@@ -607,6 +612,7 @@ ui <- fluidPage(
                         respectively. A reaction is deemed significant if its p-value is below 0.05. These reactions are represented by substrate and product lipids, with red and blue text 
                         denoting the fold change of lipids. A comprehensive summary of all significant reactions is provided in the accompanying table. For a more detailed understanding of 
                         how we calculate reaction scores, please refer to the information below."),
+                    tags$img(src = "react_img.png", align = "center", width = "100%"),
 
                     h4("3.2.1 Reaction scoring method"),
                     p("To identify potential driver reactions or enzymes in the biosynthetic network, we have developed an algorithm to compute the perturbation score for each reaction (edge). 
@@ -625,7 +631,8 @@ ui <- fluidPage(
                         of pathways, while the text size represents the significance of reactions. Additionally, the nodes in the figure are filled based on the $log_2(\\text{fold change})$ values, and their 
                         sizes represent $-log_{10}(\\text{adjusted p-value})$. If a node exhibits significant changes in abundance, its border will be highlighted in purple. It's important to note that for the 
                         Lipid Species Network, we only include the significant pathways that belong to the top 5 increased and decreased representative pathways to simplify the connections and 
-                        enhance the clarity of the network visualization.")
+                        enhance the clarity of the network visualization."),
+                    tags$img(src = "net_img.png", align = "center", width = "100%"),
                 ),
                 column(2)
             )
