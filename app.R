@@ -679,6 +679,41 @@ ui <- fluidPage(
                         tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
                     ),
                     br(),
+                    p("Q6: How can I cite iLipidome?"),
+                    p("Answer: Please cite the following paper: Lin and Chiang et al. Nature Commun. 2023 XX(XX):XXXX. We would greatly appreciate it if you could also include our URL 
+                        [http://www.bioinfomics.org/iLipidome/] in your text. If you find iLipidome useful, please help us spread the word."),
+                    br(),
+                    p("Q7: What types of lipid identifiers are supported?"),
+                    p("Answer: iLipidome requires users to upload a lipidomics dataset in a specific format. For detailed instructions on how to prepare your dataset, please refer to the 
+                        'How to prepare your dataset' section in the tutorial. It provides comprehensive information on the required format and steps to ensure compatibility with 
+                        iLipidome's analysis pipeline."),
+                    br(),
+                    p("Q8: What species does iLipidome support?"),
+                    tags$div("Answer: Currently, iLipidome website supports lipidomics data analysis for three species: human, mouse, and rat. We are continuously working to expand our support 
+                        for additional species in the future. However, regarding the handling of species or reaction not currently covered in our repository, we provide advanced 
+                        users with the flexibility to customize the reference fatty acid or lipid class pathways in the iLipidome package. For more detailed information, click ", 
+                        tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here.")
+                    ),
+                    br(),
+                    p("Q9: Is there an application programming interface (API) for iLipidome?"),
+                    p("Answer: Please note that there is no API available for automated web-based submission in iLipidome. The server's backend is unable to handle the anticipated volume of API requests, 
+                        as most iLipidome analyses require significant computational resources. We would like to reserve the iLipidome server for biologists.
+                        However, we do provide a powerful R-based package called iLipidome for bioinformaticians [https://github.com/LewisLabUCSD/iLipidome-package]. iLipidome package allows 
+                        bioinformaticians to perform unlimited offline analyses using their own hardware."),
+                    br(),
+                    p("Q10: Does iLipidome save my datasets and/or information?"),
+                    p("Answer: Lipidome tracks standard analytics data for support purposes. Uploaded user files are automatically deleted after browser is closed. It is important to note that the 
+                        maintainers of the website do not access or examine your data files, and we have no intention of adding a feature that saves your information and/or datasets on the website."),
+                    br(),
+                    p("Q11: Can I provide my own lipid dataset(s)?"),
+                    p("Answer: Yes, any lipid dataset that follows the formatting guidelines detailed in the data formatting section of the tutorial can be used."),
+                    br(),
+                    p("Q12: How can I obtain publication quality images of results created by iLipidome?"),
+                    tags$div("Answer: To obtain high quality images to use in your own publications, please make use of the R package ", 
+                        tags$a(href = "https://github.com/LewisLabUCSD/iLipidome-website/issues", "here"),
+                        " to create your own images using your own hardware."
+                    ),
+                    br(),
                 ),
                 column(2),
             ),
