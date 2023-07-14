@@ -71,7 +71,7 @@ FA_choices <- c("w3-22:6;0", "16:0;0", "18:0;0", "20:0;0", "22:0;0", "24:0;0", "
 
 ui <- fluidPage(
     # image in browser tab
-    tags$head(tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "/ilipidome_logo.png")),
+    tags$head(tags$link(rel = "icon", type = "image/png", sizes = "32x32", href = "ilipidome_logo.png")),
 
     navbarPage(
         # app title
