@@ -499,8 +499,42 @@ ui <- fluidPage(
 
                     tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
 
+                    tags$div(
+                        h3("Contents"),
+                        tags$ul(style = "list-style: none",
+                            tags$li(a(href = "#about", "1 What is iLipidome?")),
+                            tags$li(a(href = "#data", "2 Data source"),),
+                            tags$li(tags$ul(style = "list-style: none",
+                                tags$li(a(href = "#tryex", "2.1 Try our example"),),
+                                tags$li(a(href = "#uploaddata", "2.2 Upload your data"),),
+                                tags$li(tags$ul(style = "list-style: none",
+                                    tags$li(a(href = "#prepdata", "2.2.1 How to prepare your dataset?"),),
+                                    tags$li(a(href = "#groupinfo", "2.2.2 Assign group information"),),
+                                    tags$li(a(href = "#lowFA", "2.2.3 Remove low-expressed fatty acid isomers (only in the fatty acid section)"),),
+                                    tags$li(a(href = "#nonmissingpct", "2.2.4 Percentage of non-missing values to retain a pathway (only in the lipid species section):"),),
+                                    tags$li(a(href = "#exolipid", "2.2.5 Remove exogenous lipid effect"),),
+                                    tags$li(a(href = "#species", "2.2.6 Species"),),
+                                ))
+                            )),
+                            tags$li(a(href = "#results", "3 Analysis Methods and Result Interpretation"),),
+                            tags$li(tags$ul(style = "list-style: none",
+                                tags$li(a(href = "#pathway", "3.1 Pathway analysis"),),
+                                tags$li(tags$ul(style = "list-style: none",
+                                    tags$li(a(href = "#pathscore", "3.1.1 Pathway scoring method"),),
+                                    tags$li(a(href = "#idpathway", "3.1.2 Identify representative pathways"),)
+                                )),
+                                tags$li(a(href = "#reactanalysis", "3.2 Reaction analysis"),),
+                                tags$li(tags$ul(style = "list-style: none",
+                                    tags$li(a(href = "#reactscore", "3.2.1 Reaction scoring method"),)
+                                ))
+                            )),
+                            tags$li(a(href = "#network", "4 Lipid network"),)
+                        ),
+                    ),
+
                     h1("About iLipidome"),
                     
+                    a(name = "about"),
                     h3("1 What is iLipidome?"),
                     p("iLipidome is an innovative substructure-based method for analyzing lipidomics data using the lipid biosynthetic network, which takes into account the 
                         interdependence and interconnections of measured lipids. It now offers 'Lipid Substructure Analysis' functionality, allowing users to identify significant 
@@ -509,22 +543,26 @@ ui <- fluidPage(
                         “Lipid Species Analysis”, and “Lipid Class Analysis”, enabling comprehensive comparisons of lipid profiles at different levels. Our objective is to empower 
                         researchers with a deeper understanding of the intricate lipidomic alterations observed across various samples."),
                     
+                    a(name = "data"),
                     h3("2 Data source"),
                     p("Users have the option to upload their own lipid datasets or utilize example datasets (Levental KR, et al. Nat Commun. 2020). The lipid expression data should 
                         be provided in CSV format. The lipid expression data consists of a feature column, which includes the identification of differential lipids such as PC_16:0;0_18:1;0 
                         or Cer_38:1;2, followed by multiple columns representing the samples and their corresponding values."),
                     
+                    a(name = "tryex"),
                     h4("2.1 Try our example"),
                     p("The example dataset from the study 'Lipidomic and biophysical homeostasis of mammalian membranes counteracts dietary lipid perturbations to maintain cellular fitness' 
                         (1) includes the cellular lipidome data from 7 control samples and 6 samples treated with docosahexaenoic acid (DHA). The data was analyzed using MS-based shotgun 
                         lipidomics, revealing significant lipid and fatty acid reprogramming in the presence of DHA."),
                     
+                    a(name = "uploaddata"),
                     h4("2.2 Upload your data"),
                     p("Users have the option to upload their own lipid dataset, which should be provided in CSV format. The analysis process offers various parameter options to customize the 
                         analysis, including 'Method', 'Group information', 'Remove low-expressed fatty acid isomers' (available only in the fatty acid section), 'Percentage of non-missing 
                         values to retain a pathway' (available only in the lipid species section), 'Remove exogenous lipid effect', and 'Species'. Users can adjust these parameters according 
                         to their study design to achieve more precise and tailored results."),
                     
+                    a(name = "prepdata"),
                     h4("2.2.1 How to prepare your dataset?"),
                     p("To use iLipidome, you need to upload a lipid expression table (CSV format). The table should have lipids as rows and samples as columns. The first column should be named 
                         'feature' and contain the lipid names. The remaining columns should contain the sample names and the corresponding values for each lipid."),
@@ -545,7 +583,8 @@ ui <- fluidPage(
                     # ADD DOWNLOAD BUTTON FOR SUPPORTED LIPID CLASS DOT CSV
                     downloadButton("Supported_lipid_class_download", "Download Supported Lipid Classes"),
 
-                    h4("2.2.2 Assign group information:"),
+                    a(name = "groupinfo"),
+                    h4("2.2.2 Assign group information"),
                     p("Users can utilize the 'Control group' and 'Experimental group' parameters to assign group information for conducting a two-group comparison. Each group must include a 
                         minimum of two samples.  When entering the information in the 'Control group' or 'Experimental group' field, users should provide the column numbers separated by commas. 
                         It is important to consider that the first column of the dataset contains the names of the lipids, so the counting for grouping should start from the second column onwards. 
@@ -553,21 +592,24 @@ ui <- fluidPage(
                         group, you would enter '1,2,3' in the 'Control group' field and '4,5,6' in the 'Experimental group' field."),
                     tags$img(src = "ctrl_img.png", align = "center", width = "100%"),
 
-                    h4("2.2.3 Remove low-expressed fatty acid isomers (only in the fatty acid section):"),
+                    a(name = "lowFA"),
+                    h4("2.2.3 Remove low-expressed fatty acid isomers (only in the fatty acid section)"),
                     p("Due to limitations in mass spectrometry, precise double bond locations for fatty acids are often not available in lipidomics data. As a result, certain fatty acids may have 
                         multiple candidate mappings in the fatty acid network. However, some fatty acid isomers may be dominant, while others may be negligible. For exmaple, the major isomer of 
                         FA 20:4 is omega-6, not omega-3. Treating all isomers equally in the substructure calculation may not accurately reflect their true abundance. This parameter enables users 
                         to select low-expressed fatty acid isomers to exclude from decomposition into substructures within the fatty acid network, therefore improving the accuracy of calculations."),
                     tags$img(src = "FA_img.png", align = "center", width = "100%"),
 
-                    h4("2.2.4 Percentage of non-missing values to retain a pathway (only in the lipid species section):"),
+                    a(name = "nonmissingpct"),
+                    h4("2.2.4 Percentage of non-missing values to retain a pathway (only in the lipid species section)"),
                     p("During the substructure decomposition process in iLipidome, each lipid is decomposed based on its potential biosynthetic pathways. To avoid artifacts, a threshold is set to 
                         control the percentage of missing data within a pathway. You can enter a value between 0 and 1 to determine this threshold. If the proportion of missing substructures exceeds 
                         the threshold for a particular biosynthetic route, the target fatty acid or lipid species will not be decomposed into substructures. Increasing this value will result in fewer 
                         biosynthetic pathways being retained. Adjusting this parameter allows users to regulate the substructure decomposition process and minimize artifacts that may arise from 
                         unlimited decomposition."),
 
-                    h4("2.2.5 Remove exogenous lipid effect:"),
+                    a(name = "exolipid"),
+                    h4("2.2.5 Remove exogenous lipid effect"),
                     p("If an exogenous lipid treatment is involved in the study, it can significantly influence the results of substructure calculation based on biosynthetic pathways. To address this 
                         issue, iLipidome provides a parameter for users to exclude the effects of the exogenous treatment. In the fatty acid section, users have the option to select the exogenous 
                         fatty acids observed in the study to restrict substructure decomposition. In the lipid species and lipid class sections, users can enter the exogenous lipid names separated 
@@ -575,19 +617,23 @@ ui <- fluidPage(
                         dataset."),
                     tags$img(src = "exo_img.png", align = "center", width = "100%"),
 
-                    h4("2.2.6 Species:"),
+                    a(name = "species"),
+                    h4("2.2.6 Species"),
                     p("Currently, iLipidome supports the analysis of lipidomics data for three species: human, mouse, and rat."),
 
+                    a(name = "results"),
                     h3("3 Analysis Methods and Result Interpretation"),
                     p("iLipidome offers a range of figures accompanied by corresponding tables to facilitate the interpretation of analysis results."),
 
-                    h4("3.1 Pathway analysis:"),
+                    a(name = "pathway"),
+                    h4("3.1 Pathway analysis"),
                     p("In the 'Pathway analysis' section, the figure showcases the top 5 significant representative pathways within the network. Increased pathways are highlighted in red, while 
                         decreased pathways are shown in blue. A pathway is considered significant if its score exceeds $1.96$. The figure represents pathways using starting and ending lipids. 
                         Additionally, a comprehensive summary of all significant pathways can be found in the accompanying table. For a deeper understanding of how we calculate pathway scores, 
                         calibrate pathways, and select representative pathways, detailed information is available below."),
                     tags$img(src = "path_img.png", align = "center", width = "100%"),
 
+                    a(name = "pathscore"),
                     h4("3.1.1 Pathway scoring method"), # USE MATHEMATICAL SYMBOLS FOR THIS SECTION, WITHMATHJAX
                     p("To analyze the pathways within the biosynthetic network, we firstly identify all possible pathways between any two nodes. We then examine the increased and decreased 
                         pathways within this set using a method adapted from previous studies (Nguyen A, et al. Curr Opin Biotechnol. 2017 and Trey Ideker, et al. Bioinformatics 2002)."),
@@ -604,6 +650,7 @@ ui <- fluidPage(
                     p("To determine if a pathway is significantly increased or decreased, we use a threshold of $1.96$ as the critical value, based on the significance level $\\text{p-value} < 0.05$ from a 
                         two-tailed test. Thus, $S_a > 1.96$ represents a significantly increased pathway, while $S_a < -1.96$ indicates a significantly decreased pathway."),
 
+                    a(name = "idpathway"),
                     h4("3.1.2 Identify representative pathways"),
                     p("To classify the pathways found in the biosynthetic network, we employ two methods based on fatty acids or lipid species and lipid classes. Initially, the pathways are 
                         separated into increased or decreased based on the signs of their scores. We then rank their importance using the absolute value of the pathway scores and perform a 
@@ -615,13 +662,15 @@ ui <- fluidPage(
                         frequency (e.g., 16:0-18:1 or 32:0) within each lipid species pathway. Similar to the FA analysis, pathways with the same dominant FA composition are categorized into 
                         the same representative pathway. If a dominant FA appears for the first time during this process, the pathway is considered a new representative pathway."),
 
-                    h4("3.2 Reaction analysis:"),
+                    a(name = "reactanalysis"),
+                    h4("3.2 Reaction analysis"),
                     p("In the 'Reaction analysis' section, the figure showcases the top 5 significant reactions within the network, where red and blue colors indicate an increase and decrease, 
                         respectively. A reaction is deemed significant if its p-value is below 0.05. These reactions are represented by substrate and product lipids, with red and blue text 
                         denoting the fold change of lipids. A comprehensive summary of all significant reactions is provided in the accompanying table. For a more detailed understanding of 
                         how we calculate reaction scores, please refer to the information below."),
                     tags$img(src = "react_img.png", align = "center", width = "100%"),
 
+                    a(name = "reactscore"),  
                     h4("3.2.1 Reaction scoring method"),
                     p("To identify potential driver reactions or enzymes in the biosynthetic network, we have developed an algorithm to compute the perturbation score for each reaction (edge). 
                         The idea is to compare the ratio of product over reactant and assess its statistical significance across different conditions."),
@@ -633,7 +682,8 @@ ui <- fluidPage(
                         provide information at the lipid class level, and the corresponding genes/enzymes in lipid molecular reactions highlighted by iLipidome do not take into account lipid 
                         species specificities."),
 
-                    h3("4 Lipid network:"),
+                    a(name = "network"),
+                    h3("4 Lipid network"),
                     p("In the 'Lipid network' section, we constructed the Fatty Acid/Lipid Species/Lipid Class Network and highlighted the top 5 significantly increased/decreased representative 
                         pathways and reactions. In the network visualization, red and blue colors indicate increase and decrease, respectively. The line width and color depth reflect the importance 
                         of pathways, while the text size represents the significance of reactions. Additionally, the nodes in the figure are filled based on the $log_2(\\text{fold change})$ values, and their 
