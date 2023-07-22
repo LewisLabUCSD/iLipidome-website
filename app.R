@@ -849,6 +849,8 @@ server <- function(input, output, session) {
 
         FA_substructure_result <<- NULL
         output$FA_error <- renderText("")
+        output$FA_nosig_path <- renderText("")
+        output$FA_nosig_reaction <- renderText("")
 
         # Create a Progress object
         FA_progress <- shiny::Progress$new()
@@ -971,6 +973,8 @@ server <- function(input, output, session) {
 
         LS_substructure_result <<- NULL
         output$LS_error <- renderText("")
+        output$LS_nosig_path <- renderText("")
+        output$LS_nosig_reaction <- renderText("")
 
         # Create a Progress object
         LS_progress <- shiny::Progress$new()
@@ -1095,6 +1099,8 @@ server <- function(input, output, session) {
 
         LC_substructure_result <<- NULL
         output$LC_error <- renderText("")
+        output$LC_nosig_path <- renderText("")
+        output$LC_nosig_reaction <- renderText("")
 
         # Create a Progress object
         LC_progress <- shiny::Progress$new()
