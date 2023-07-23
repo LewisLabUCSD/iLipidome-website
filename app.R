@@ -497,7 +497,10 @@ ui <- fluidPage(
                                     </script>
                                     ")),
 
-                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
+                    tags$div(
+                        tags$img(src = "ilipidome_title_logo.png", width = "400px", height = "100px"),
+                        style = "text-align: center;"
+                    ),
 
                     tags$div(
                         h3("Contents"),
@@ -699,7 +702,10 @@ ui <- fluidPage(
             fluidRow(
                 column(2),
                 column(8, 
-                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
+                    tags$div(
+                        tags$img(src = "ilipidome_title_logo.png", width = "400px", height = "100px"),
+                        style = "text-align: center;"
+                    ),
                     h3("Frequently Asked Questions"),
                     p("In this section, you will find answers to commonly asked questions. If there is an issue that you can't find the answer to here, 
                         please contact us using the info in the 'Contact Us' section of the website"),
@@ -772,7 +778,10 @@ ui <- fluidPage(
             fluidRow(
                 column(2),
                 column(8,
-                    tags$img(src = "ilipidome_title_logo.png", align = "left", width = "100%", height = "180px"),
+                    tags$div(
+                        tags$img(src = "ilipidome_title_logo.png", width = "400px", height = "100px"),
+                        style = "text-align: center;"
+                    ),
                     h3("Contact Us"),
                     p("If you would like to reach out to us, please send an email to <waxlos987@gmail.com> and/or <austin.chiang@gmail.com> with 'iLipidome'
                     followed by the topic of the email in the subject line. "
