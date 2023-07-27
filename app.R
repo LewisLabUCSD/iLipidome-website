@@ -76,8 +76,11 @@ ui <- fluidPage(
     navbarPage(
         # app title
         "iLipidome",
-        # imageOutput("logo"),
         tabPanel("Lipid Substructure Analysis",
+            tags$div(
+                tags$img(src = "ilipidome_title_logo.png", width = "400px", height = "100px"),
+                style = "text-align: center;"
+            ),
             tabsetPanel(
                 tabPanel("Fatty Acid Analysis",
                     fluidRow(br(),),
@@ -183,7 +186,6 @@ ui <- fluidPage(
                     fluidRow(
                         tabsetPanel( # tabPanels for visualizations
                             tabPanel("Lipid Expression Data",
-                                # span(textOutput("FA_error"), style="color:red"),
                                 verbatimTextOutput("FA_error"),
                                 DT::dataTableOutput("FAInData")
                             ),
@@ -583,7 +585,6 @@ ui <- fluidPage(
                         analysis will be interrupted. Also, lipid classes with the same number of FAs (e.g., PC, PE) in the same pathways (e.g., Glycerophospholipid) should have a consistent 
                         lipid naming format. For example, PC_36:0;0 and PE_34:0;0 or PC_18:0;0_18:0;0 and PE_16:0;0_18:0;0. Additionally, dihydrosphingolipids (dh-) specify sphingolipids with 
                         sphingoid bases of 18:0:2 instead of 18:1:2."),
-                    # ADD DOWNLOAD BUTTON FOR SUPPORTED LIPID CLASS DOT CSV
                     downloadButton("Supported_lipid_class_download", "Download Supported Lipid Classes"),
 
                     a(name = "groupinfo"),
@@ -637,7 +638,7 @@ ui <- fluidPage(
                     tags$img(src = "path_img.png", align = "center", width = "100%"),
 
                     a(name = "pathscore"),
-                    h4("3.1.1 Pathway scoring method"), # USE MATHEMATICAL SYMBOLS FOR THIS SECTION, WITHMATHJAX
+                    h4("3.1.1 Pathway scoring method"), 
                     p("To analyze the pathways within the biosynthetic network, we firstly identify all possible pathways between any two nodes. We then examine the increased and decreased 
                         pathways within this set using a method adapted from previous studies (Nguyen A, et al. Curr Opin Biotechnol. 2017 and Trey Ideker, et al. Bioinformatics 2002)."),
                     p("In this method, we transform the p-value ($P_i$) of each node ($i$) in a pathway into a z-score, which is used to calculate the pathway score. Specifically, we convert each 
@@ -812,16 +813,6 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-
-    # output$logo <- renderImage({
-    #     list(
-    #         src = file.path("www/logo.png"),
-    #         contentType = "image/png",
-    #         width = 80,
-    #         height = 30
-    #     )
-    # }, deleteFile = FALSE)
-
     # initialize shinyhelper package for help modals
     observe_helpers()
 
@@ -942,7 +933,7 @@ server <- function(input, output, session) {
                 output$FA_nosig_reaction <- renderText("No Significant Reactions Found")
             }
 
-            output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]]) # ask what the output for the visnetwork would be if nothing is outputted
+            output$FANetworkGraph <- renderVisNetwork(FA_substructure_result[[5]])
 
             output$FAsubres <- DT::renderDataTable({
                 FA_substructure_result[[6]] %>%
@@ -965,7 +956,6 @@ server <- function(input, output, session) {
             })
         }
         else { # display errors
-            #figure out how to show FA_format error to user
             output$FA_error <- renderText({
                 paste(unlist(strsplit(FA_format, split = "!")), sep = "\n")
             })
